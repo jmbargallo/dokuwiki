@@ -1,0 +1,52 @@
+= linux install
+**acpi**: monitor de temperatura del ordenador
+=== componentes
+  * [[linux:moebius:start|]]
+  * [[linux:docker:start]]
+  * [[linux:tomcat:start]]
+  * [[linux:seedbox:start]]
+  * [[linux:desktop:conky:start]]
+
+== usando el sistema
+  * [[linux:kde:start]]
+  * [[linux:hard:start]]
+  * [[linux:systemV:start]]
+  * [[linux:inicio:start|]]
+  * [[linux:systemd:start]]
+  * [[linux:aptget:start|]]
+  * [[linux:tcpip:dns|]]
+  * [[linux:users:start|]]
+  * [[linux:certificados:start]]
+  * [[linux:cron:start|]]
+  * [[linux:background:start]]
+  * [[linux:librerias:start]]
+
+=== paquetes
+  * [[linux:paquetes:encriptado:start]]
+  * [[linux:paquetes:pihole:start]]
+  * [[linux:paquetes:webmin:start]]
+
+=== hard
+  * [[linux:alsa:start]]
+  * [[linux:paquetes:scanneracerscanprisa|Scanner Acer ScanPrisa 640U]]
+
+== configuración paquetes
+  * [[linux:paquetes:openvpn]]
+  * [[linux:paquetes:lighttpd|lighttpd -> servidor web]]
+  * [[linux:paquetes:sysstat|sysstat -> monitorización del sistema]]
+  * [[linux:paquetes:mrtg|mrtg -> control comunidad SNMP]]
+  * [[linux:paquetes:sendmail|sendmail -> servidor SMTP]]
+  * [[linux:paquetes:proftpd|ProFTPd -> servidor FTP]]
+  * [[linux:paquetes:vsftpd|]]
+  * [[linux:paquetes:pureftpd]]
+  * [[linux:paquetes:java:start]]
+  * [[linux:paquetes:signal]]
+  * [[linux:paquetes:winehq]]
+  * [[linux:paquetes:green-recorder]]
+  * [[linux:paquetes:simple-screen-recorder]]
+  * [[linux:paquetes:notify]]
+
+== supervisión
+  * [[linux:log:start]]
+  * [[linux:nagios:start]]
+

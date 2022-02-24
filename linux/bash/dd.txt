@@ -1,0 +1,41 @@
+====== dd ======
+
+  * ''dd'' -> comando para flujos de datos
+    * **if**: archivo de origen
+    * **of**: archivo de destino
+    * **ibs**: número bytes leídos cada vez
+    * **obs**: número bytes leídos cada vez
+    * **bs**: número de bytes leídos y escritos cada vez
+    * **cbs**: número de bytes a convertir cada vez
+    * **skips**: número de bloques a saltar en **if** antes de empezar a copiar
+    * **seek**: número de bloques a saltar en **of** antes de empezar a copiar
+    * **count**: número de bloques a copiar de **if** en lugar del archivo completo
+
+=== ejemplos=== 
+=== MBR=== 
+<callout type="info" icon="true" title="Advertencia">Restaurar el MBR con una tabla de particiones diferente hará que sus datos sean ilegibles y casi imposible de recuperar.</callout>
+  * ''dd if=/dev/sda of=/boot/mbr-backup bs=512 count=1'': copia del MBR
+  * ''dd if=/root/mbr-backup of=/dev/sda bs=512 count=1'': restauración del MBR
+<callout type="info" icon="true" title="Advertencia">Este comando inutilizará el sistema, impidiento su arraque. Habrá que entrar en modo rescue y reinstalar el GRUB (si lo tienes)</callout>
+  * ''dd if=/dev/zero of=/dev/sda bs=446 count=1''
+
+=== reset dispositivo=== 
+  * ''dd if=/dev/urandom of=/dev/sda bs=4k'': llena el disco de datos aleatorios.
+  * ''dd if=/dev/zero of=/dev/sda bs=4k'': llena el disco de 0.
+  * ''dd if=/dev/sda | hexdump -C | grep [^00] a cero'': verifica que el disco esté a 0
+  * Borra GPT del disco. Como GPT escribe los datos al principio y al final del disco, después de borrar desde el principio, tenemos que encontrar el número de sectores (el segundo comando), y entonces borrar los 20 últimos sectores:<code bash>dd if=/dev/zero of=/dev/sda bs=512 count=2
+fdisk -s /dev/sda # averiguar número de sectores
+dd if=/dev/zero of=/dev/sda seek=(number_of_sectors – 20) bs=1k
+</code>
+
+=== ISO=== 
+  * ''dd if=/dev/disk2s1 of=/Users/admin/imagen.iso'': graba disco a imagen ISO
+  * ''dd bs=4M if=image.iso of=/dev/sdxx'': graba una imagen ISO a disco (USB)
+
+=== copias=== 
+  * ''dd if=/dev/sdb2 ibs=4096 | gzip > partition.image.gz conv=noerror'': Crea una imagen gzip de la segunda partición del segundo disco
+
+=== progress=== 
+  * ''sudo dd status=progress if=... of=...'': muestra estadísticas de transferencia (solo GNU Coreutils 8.24+)
+  * ''sudo dd if=... | pv <-s size> | sudo dd of=...'': usar utilidad PV para progreso (y si le pasas el "size", hace cálculo de restante)
+  * [[http://askubuntu.com/questions/215505/how-do-you-monitor-the-progress-of-dd]]

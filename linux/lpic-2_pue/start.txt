@@ -1,0 +1,117 @@
+==== LPIC2 (PUE 2021)====
+{{tag>linux}}
+{{tag>cursos}}
+  * Formador: Juan Alberto Garcia Fernandez
+    * <alberto@rootdesdezero.com>
+    * <info@rootdesdezero.com>
+    * <agarciaf@outlook.es>
+    * [[https://github.com/agarciafer]]
+    * [[https://rootdesdezero.com]]
+
+== datos de interés==
+  * [[https://lms.pue.es]]
+
+== normas básicas==
+  * nombre y apellido en el ZOOM (registro de asistencia)
+  * Técnica: María Fraga (con Magalí)
+  * 75% asistencia (con o sin justificación)
+  * 2 pruebas: intermedia y final. Certificados 
+
+== Sesiones==
+  * [[info:cursos:pue:lpic2-2021:s0]]
+  * [[info:cursos:pue:lpic2-2021:s1]]
+  * [[info:cursos:pue:lpic2-2021:s2]]
+  * [[info:cursos:pue:lpic2-2021:s3]]
+  * [[info:cursos:pue:lpic2-2021:s4]]
+  * [[info:cursos:pue:lpic2-2021:s5]]
+  * [[info:cursos:pue:lpic2-2021:s6]]
+  * [[info:cursos:pue:lpic2-2021:s7]]
+  * [[info:cursos:pue:lpic2-2021:s8]]
+  * [[info:cursos:pue:lpic2-2021:s9]]
+  * [[info:cursos:pue:lpic2-2021:s10]]
+  * [[info:cursos:pue:lpic2-2021:s11]]
+  * [[info:cursos:pue:lpic2-2021:s12]]
+  * [[info:cursos:pue:lpic2-2021:s13]]
+  * [[info:cursos:pue:lpic2-2021:s14]]
+  * [[info:cursos:pue:lpic2-2021:s15]]
+== Temario==
+  * [[https://www.lpi.org/our-certifications/exam-201-objectives]]
+  * [[https://www.lpi.org/es/our-certifications/exam-202-objectives]]
+
+===== LPIC-201=====
+==== 200 Capacity Planning====
+  * [[info:cursos:pue:lpic2-2021:s1#unidad_200capcity_planning]]
+  * [[info:cursos:pue:lpic2-2021:s2#recopilacion_hard]]
+  * [[info:cursos:pue:lpic2-2021:s2#lsof]]
+  * [[info:cursos:pue:lpic2-2021:s3#procesos]]
+
+==== 201 Kernel====
+  * [[info:cursos:pue:lpic2-2021:s3#kernel]]
+
+==== 202 System Startup====
+  * [[info:cursos:pue:lpic2-2021:s3#systemv]]
+  * [[info:cursos:pue:lpic2-2021:s4#systemd]]
+    * [[https://linoxide.com/linux-command/systemd-vs-sysvinit-cheatsheet/]]
+  * [[info:cursos:pue:lpic2-2021:s3#journal]] <- no entra certificación
+
+==== 203/204 Almacenamiento====
+  * [[info:cursos:pue:lpic2-2021:s5#almacenamiento|]]
+  * [[info:cursos:pue:lpic2-2021:s6#lvm|]]
+  * [[info:cursos:pue:lpic2-2021:s7#raid|]]
+
+==== 205 Networking====
+  * [[info:cursos:pue:lpic2-2021:s7#networking_configurationcomandos|]]
+    * [[info:cursos:pue:lpic2-2021:s7#hostname|]]
+    * [[info:cursos:pue:lpic2-2021:s7#configuracion_cliente_dns|]]
+    * [[info:cursos:pue:lpic2-2021:s7#puertas_de_enlace|]]
+    * [[info:cursos:pue:lpic2-2021:s7#alias_ip|]]
+    * [[info:cursos:pue:lpic2-2021:s7#arp|]]
+  * [[info:cursos:pue:lpic2-2021:s7#networking_configurationtroubleshooting|]]
+  * [[info:cursos:pue:lpic2-2021:s7#networking_configurationtcpwrappers|]]
+  * [[info:cursos:pue:lpic2-2021:s7#resumen_seguridad_servicios|]]
+
+==== 206 System Maintenance====
+  * [[info:cursos:pue:lpic2-2021:s8#system_maintenance]]
+
+==== LPIC-202====
+==== 207: DNS server (bind9)====
+  * [[info:cursos:pue:lpic2-2021:s8#dns]]
+
+==== 208: Web Services====
+==== Apache====
+  * [[info:cursos:pue:lpic2-2021:s10#apachediretivas_basicas]]
+    * [[info:cursos:pue:lpic2-2021:s10#ssl]]
+    * [[info:cursos:pue:lpic2-2021:s10#rsync]]
+    * [[info:cursos:pue:lpic2-2021:s10#ldap]]
+
+==== Squid====
+  * [[info:cursos:pue:lpic2-2021:s10#proxysquid]]
+  * [[info:cursos:pue:lpic2-2021:s11#proxysquid]]
+
+==== nginx====
+  * [[info:cursos:pue:lpic2-2021:s11#nginx]]
+
+==== 209: File Sharing====
+  * 209.1 [[info:cursos:pue:lpic2-2021:s11#file_sharingsamba]]
+  * 209.2 [[info:cursos:pue:lpic2-2021:s12#nfs]]
+
+==== 210 Network Client Management====
+  * 210.1 [[info:cursos:pue:lpic2-2021:s12#dhcp]]
+  * 210.2 [[info:cursos:pue:lpic2-2021:s12#pam]]
+  * 210.2 [[info:cursos:pue:lpic2-2021:s13#pam]]
+  * 210.3 [[info:cursos:pue:lpic2-2021:s13#ldap]]
+
+==== 211 Servicios correo electrónico====
+  * 211.1 [[info:cursos:pue:lpic2-2021:s14#e-mail_services]]
+
+==== 212 Seguridad del sistema====
+  * 212.1 [[info:cursos:pue:lpic2-2021:s14#ssh]]
+  * 212.2 [[info:cursos:pue:lpic2-2021:s12#ftp]]
+  * 212.4
+  * 212.5
+
+== Revisar/TODO==
+  * Pendiente próxima semana: cabinas discos con opneFiler <- [[info:cursos:pue:lpic2-2021:s7|]]
+  * Ejemplos de conversión de un raid a otro… RAID1→RAID3, ampliar RAID5 ? <- [[info:cursos:pue:lpic2-2021:s7|]]
+  * [[https://wiki.archlinux.org/index.php/systemd]]
+  

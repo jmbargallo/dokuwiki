@@ -1,0 +1,46 @@
+= scripts
+{{tag>linux bash}}
+
+== parámetro
+  * [[linux:scripts:getopts]]
+
+== generales
+  * [[linux:scripts:home|/home/user/.xxxx]]
+  * [[linux:scripts:hack1|script sencillo de hack de Kenneth Peiruza]]
+  * [[linux:scripts:recopilator|recopilación del sistema]]
+  * [[linux:scripts:vsftp|scripts alta usuarios en vsFTP]]
+  * [[linux:scripts:utils|]]
+  * [[linux:scripts:1st-last]]
+  * [[linux:scripts:phpscript|Ejecución script PHP con CRON sin problemas]]
+
+== interacción
+  * [[linux:scripts:select]]
+  * [[linux:scripts:arrayloop]]
+  * [[linux:scripts:forfolders]]
+
+== el mundo del backup
+  * [[linux:scripts:backup1|backup del sistema (correo, BDD MySQL, home, etc)]]
+  * [[linux:scripts:backup2|backup de file system]]
+  * [[linux:scripts:mysqldump|mysqldump, backups de mysql]]
+  * [[linux:scripts:rsync|rsync, sincronización de carpetas]]
+  * [[linux:scripts:backupgpg|backup,encriptado,copia a remoto]]
+  * [[linux:scripts:protocolobackup]]
+  * [[linux:scripts:10minutos]]
+  * [[linux:scripts:backupselectivo]]
+  * [[linux:scripts:prune]]
+
+== internet
+  * [[linux:scripts:twitter]]
+
+== server
+  * [[linux:scripts:tareasserver]]
+
+== utilidades
+  * [[linux:scripts:random]]
+
+
+== LPIC2 (2008)
+  * [[info:cursos:lpic2:scripts:backup|]]
+  * [[info:cursos:lpic2:scripts:busca-nfs|]]
+  * [[info:cursos:lpic2:scripts:copia-remotos|]]
+  * [[info:cursos:lpic2:scripts:recopilador|]]

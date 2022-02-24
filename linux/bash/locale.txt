@@ -1,0 +1,32 @@
+====== locale ======
+
+  * [[http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes|lista de los códigos locale]]
+  * para lanzar una aplicación en un idioma determinado (y si la aplicación lo soporta): ''$ export LANG=<codigo>; <aplicacion>''
+
+=== el comando=== 
+  * ''locale'' -> permite ver todos los valores en el sistema
+  * ''locale -a'' -> permite ver los locales del sistema
+  * ''locale -m'' -> permite ver los mapas de caracteres instalados en el sistema
+  * ''locale-gen <locale>''
+    * **/usr/share/i18m/SUPPORTED** hay una lista de todos los locales
+    * **/etc/default/locale** fichero de configuración por defecto
+      * este fichero se puede actualizar a mano o con ''update-locale <locale>''
+      * configurando las diferentes directivas se pueden realizar combinaciones como operar en español con mensajes en inglés
+      * [[https://www.thomas-krenn.com/en/wiki/Configure_Locales_in_Ubuntu]]
+
+=== limpiar sistema de ficheros LOCALE no usados=== 
+  * ''$ sudo apt-get install localepurge''
+  * ''/etc/locale.nopurge'' contiene los ficheros que no se eliminarán al aplicar el comando
+
+=== cambiar teclado desde consola=== 
+  * Debian
+    * Cambiar el lenguaje: ''$ dpkg-reconfigure locales''
+    * Cambiar la configuración del teclado: ''$ sudo dpkg-reconfigure keyboard-configuration''
+      * para que los cambios se hagan efectivos inmediatamente: ''$ setupcon''
+    * Cambiar la configuración del teclado: ''$ dpkg-reconfigure console-data'' ?
+  * Ubuntu
+    * Cambiar el lenguaje: ''$ sudo set-language-env -E''
+    * Cambiar la configuración del teclado: ''$ sudo dpkg-reconfigure console-setup''
+  * ''sudo setxkbmap -layout 'es,es' -model pc105''
+    * [[https://andalinux.wordpress.com/2008/08/08/configurar-teclado-ubuntu-correctamente-en-castellano/]]
+  * ''sudo loadkeys es''

@@ -1,0 +1,6 @@
+= grub
+== añadir otros OS
+<code bash>
+sudo os-prober # sudo apt install os-prober
+sudo update-grub
+</code>

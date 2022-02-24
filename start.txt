@@ -1,0 +1,20 @@
+====== Informática ======
+
+==== OS ====
+  * [[linux:start|]]
+  * [[mac:start|]]
+  * [[windows:start|]]
+  * [[boot:start]]
+
+==== Rspberry pi ====
+
+  * [[Sistema control de Temperatures (Ambient CPD):start]]
+  * [[Sistema control de Temperatures Ultracongelador -80C:start]]
+
+==== Recetas rapidas ====
+
+  * [[Bloquear usuario root SSH:start|]]
+  * [[Instalar LetsEncrypt:start|]]
+  * [[Instalar LAMP Ubuntu 18.04:start|]]
+  * [[Instalar PHPmyadmin:start|]]
+  * [[Instalar Wordpress:start|]]

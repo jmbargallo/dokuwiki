@@ -1,0 +1,10 @@
+====== less ======
+
+=== línea comando=== 
+  * ''-N'' : números de línea
+  * ''-M'' : long prompt -> + información
+  * ''+F'' : seguimiento en vivo (como **tail -f <fichero>**)
+  * ''-S'' : no rompe las líneas al llegar a final de pantalla
+
+=== enlaces=== 
+  * [[https://en.wikipedia.org/wiki/Less_(Unix)]]

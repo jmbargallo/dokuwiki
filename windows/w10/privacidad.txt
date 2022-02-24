@@ -1,0 +1,30 @@
+= Windows 10 privacidad
+para ir a configuración, pulsar <kbd>Windows+X</kbd>
+== configuración -> Privacidad
+  * General: todo desactivado
+  * Voz: desactivado
+  * comentarios y diagnósticos:
+    * Marcar **Datos de diagnósticos necesarios**
+    * Desactivar todo
+    * Eliminar
+    * Frecuencia de comentarios: **nunca**
+  * Historial de actividad:
+    * desactivar todo
+    * borrar
+    * si la cuenta está vinculada a una cuenta de Microsoft, a través de [[https://account.microsoft.com/privacy/|este enlace]] se puede gestionar
+  * Ubicación
+  * Cámara
+  * Micrófono
+
+== services.msc
+  * ejecutar <kbd>windows+R</kbd>: **services.msc**
+  * buscar **Diagnostic Execution Service**
+  * tipo de inicio: **Deshabilitado**
+
+
+== herramientas
+  * [[https://pxc-coding.com/donotspy10/donotspy-10-download/|DoNotSpy 10]]
+  * [[https://www.w10privacy.de/deutsch-start/download/|W10privacy]]
+  * [[https://www.getblackbird.net/download/|blackbird (usuarios + avanzados)]]
+
+/via:[[https://www.genbeta.com/windows/que-hay-que-mirar-windows-10-para-tener-maxima-privacidad-posible]]

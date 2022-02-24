@@ -1,0 +1,56 @@
+====== grep ======
+
+===== uso =====
+
+es una utilidad de línea de comando para buscar [[tech:regexp:start|expresiones regulares]] dentro de cadenas.
+
+  * ''$ grep''
+    * -n : muestra número de línea
+    * -v : inverso, muestra las líneas que NO tienen la cadena
+    * -w : palabras completas
+    * -x : lineas completas, no fragmentos
+    * -P : uso del formato PERL de expresiones regulares
+    * --color : marca en color las coinicidencias
+    * -i : --ignore-case
+    * -c : count
+    * -r : búsqueda recursiva
+    * -l : mostrar solo el nombre del fichero que hace match
+
+===otras utilidades similares=== 
+  * **riggrep** : (no en repos por defecto de Debian) -> [[https://github.com/BurntSushi/ripgrep]]
+
+
+
+=== ejemplos=== 
+  * buscar una cadena en una serie de ficheros:<code bash>find . -name "*.java" -print0 | xargs -0 grep -i ".*Legacy.*xmi"</code>
+  * usar un fichero de apoyo de ficheros para realizar acciones sobre los mismos
+    * extraido de dokuwiki
+    * permite comentarios en el fichero TXT
+<code bash>
+grep -Ev "^($|#)" files2remove.txt | xargs -n 1 rm -fd
+</code>
+<code txt files2remove.txt>
+# removed in 2011-05-25
+conf/words.aspell.dist
+lib/styles/style.css
+
+# removed in 2010-11-07
+inc/lang/ar/subscribermail.txt
+inc/lang/az/subscribermail.txt
+inc/lang/bg/subscribermail.txt
+inc/lang/ca/subscribermail.txt
+inc/lang/ca-valencia/subscribermail.txt
+inc/lang/cs/subscribermail.txt
+</code>
+  * buscar cadenas no coincidentes entre 2 ficheros: <code bash>grep -vf fichero1 fichero2</code><code bash>grep -vxFf ItemsListtoAvoid.txt AllItemsList.txt > ItemsDifference.txt</code>
+  * filtrado en vivo: <code bash>tail -f some_log_file.log | grep --line-buffered the_thing_i_want</code>
+  * búsqueda de 2 palabras:<code bash>
+grep -e 'palabra1' -e 'palabra2' fichero
+grep 'palabra1\|palabra2\|palabra3' fichero
+grep -E 'palabra1|palabra2' fichero
+egrep -w 'palabra1|palabra2' fichero
+</code>
+  * mostrar líneas sin comentarios:<code bash>grep -v ^# <fichero> | grep .</code>
+    * primera parte descarta toda aquella línea que empiece por #
+    * segunda parte solo deja pasar líneas no vacías
+  * generar contraseña:<code bash>strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n'; echo</code>

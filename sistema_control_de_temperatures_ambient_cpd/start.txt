@@ -1,0 +1,466 @@
+======  Sistema de comprovació de temperatures del CPD (raspi) ======
+
+
+====== Configuracio inicial raspberry pi ======
+
+
+==== OS per RPI ====
+
+
+Obtindre imatge Raspbian/Lite desde https://www.raspberrypi.org/downloads/raspbian/
+
+Obtindre programa Win32 Disk Imager http://sourceforge.net/projects/win32diskimager/
+
+Iniciar Win32 Disk Imager y seleccionar la imatge Rapsbian descarregada (.img file) amb el selector "Image File". Seleccionar la lletra on es la SD y "Write".
+
+Imager demana confirmar sobreescritura. Seleccionar "Yes". Esprar a la confirmacio y  "OK", tancar Disk Imager y extreure la SD card.
+
+==== ajust basic Raspberry Pi ====
+
+
+
+Insertar la SD card a la Raspberry Pi (Conectar teclat y display abans de conectar la alimentacio).
+
+Rasperry Pi arrenca i demana username y password.
+
+Per defecte son :
+
+username: **pi**
+
+password: **raspberry**
+
+Despres de arrencar es pot entrar a configuracio amb:
+
+<code bash>sudo raspi-config</code> 
+
+A la configuracio:
+
+   - Cambiar password/username si es creu necessari
+  -   
+  -  Configurar arrencada per consola smb option 1, console.
+  -   
+  -  Ajustar/comprobar configuracio de Hora/idioma/teclat.
+  -   
+  -  De les opcions de interfacing , seleccionar P2 - SSH  enable 
+  -   
+  -  Open advanced options ->  Expand filesystem
+  
+Finalment anar a "Finish" i reiniciar RPI amb:
+
+<code bash>sudo reboot</code>
+
+==== connexio PC(SSH) ====
+
+
+
+ Desde Windows es pot fer servir PuTTY  http://www.chiark.greenend.org.uk/~sgtatham/putty....
+
+Per saber la ip de la Raspberry es pot fer servir:
+
+<code>ifconfig</code>
+
+==== cablejat Sensor====
+
+{{:fidmag:projectes:temperatures:raspberrypi-gpio-esquema-conexion-sensor-dht22-am2302.png?400|}}
+
+
+==== instal.lacio llibreries DHT22 ====
+ 
+
+
+Actualitzar la Raspberry pi.
+
+<code bash>sudo apt-get update
+
+sudo apt-get upgrade</code>
+
+Install Adafruit Python code. Necezsari per llegir el sensor DHT22. Tambe pèrmet comprovar que tot esta montat correctament.
+
+Primer, instalar compilador y llibreria python 
+
+<code bash>sudo apt-get install build-essential python-dev python-openssl</code>
+
+Situarse al directori on es vol instal.lar  el codi Adafruit , per defecte /home/. 
+
+<code bash>cd /home/pi</code>
+
+Pot fer falta instl.lar Git si no esta inclos per defecte:
+
+<code bash>sudo apt-get install git</code>
+
+Clonar el repositori git: 
+
+<code bash>git clone https://github.com/adafruit/Adafruit_Python_DHT.g...</code>
+
+Anar al directori corresponent:
+
+<code bash>cd Adafruit_Python_DHT</code>
+
+
+And finally install the Adafruit library. Type following and press enter.
+
+<code bash>sudo python setup.py install</code>
+
+==== prova del DHT22 ====
+
+
+Anar al directori Adafruit_Python_DHT y despres al directori examples. Entrar el seguent i pulsar enter enter.
+
+<code bash>cd /home/pi/Adafruit_Python_DHT/examples</code>
+
+provar el funcionament amb:
+
+<code bash>sudo ./AdafruitDHT.py sensortipus GPIO</code>
+
+En el cas del cablejat del texte:
+
+<code bash>sudo ./AdafruitDHT.py 22 4</code>
+
+Si tot esta ok, es veura la lectura del sensor.
+
+==== configuracio MySql per guardar dades Temperatura ====
+
+
+Instalar Mysql/MariaDb y els complements necesaris:
+
+<code>sudo apt-get install mysql-server python-mysqldb</code>
+
+Entrar al mode consola de sql.
+
+<code>sudo mysql -u root -p -h localhost</code>
+
+Pulsar Enter per password (buit)y entrarem en la consola MariaDb 
+
+Sobre consola
+
+Primer, crear base de dades temperatures:
+
+<code sql>CREATE DATABASE temperatures;</code>
+
+Seleccionar la base de dades creada:
+
+<code sql>USE temperatures;</code>
+
+Crear usuari i garantir acces a la base de dades a aquest usuari:
+
+<code sql>CREATE USER 'logger'@'localhost' IDENTIFIED BY 'password';
+
+GRANT ALL PRIVILEGES ON temperatures.* TO 'logger'@'localhost';
+
+FLUSH PRIVILEGES;</code>
+
+El usuari/privilegis estan creats. Ara es possible cambiar de l´usuari root a aquest nou usuari:
+
+<code sql>quit</code>
+
+Tornar a conectar amb el nou usuari
+
+<code>sudo mysql -u logger -p -h localhost</code>
+
+Donar la contrasenya implementada al pas anterior.
+
+Crear dues taules. Temperaturedata per guardar les dades del sensor y data/hora y mailsendlog that amb informacio del correus que han superat els limits de temperatura.
+
+Per crear les taules:
+
+<code sql>USE temperatures;</code>
+
+Crear la primera taula amb les columnes dateandtime, sensor, temperature y humidity:
+
+<code sql>CREATE TABLE temperaturedata (dateandtime DATETIME, sensor VARCHAR(32), temperature DOUBLE, humidity DOUBLE);</code>
+
+Crear segona taula amb columnes dateandtime, triggedsensor, triggedlimit y lasttemperature:
+
+<code sql>CREATE TABLE mailsendlog (mailsendtime DATETIME, triggedsensor VARCHAR(32), triggedlimit VARCHAR(10), lasttemperature VARCHAR(10));</code>
+
+Es pot confirmar, que les taules buides estan creades amb:
+
+<code sql >SELECT * FROM mailsendlog;
+SELECT * FROM temperaturedata;</code>
+
+Si les taules exiteixen, es veura: "Empty Set (0.00 sec)"
+
+La base de dades esta configurada es pot sortir de mysql:
+
+<code>quit</code>
+
+Reiniciar mysql perque els canvis tinguin efecte:
+
+<code>sudo /etc/init.d/mysql restart</code>
+
+
+==== temperature Logger Code ====
+
+
+Asegurarse de estar en el directori on es vol instal.lar el DHT22-TemperatureLogger, per defecte /home/pi/:
+
+<code bash >cd /home/pi</code>
+
+Clonar el respositori git:
+
+<code bash>git clone https://github.com/jjpFin/DHT22-TemperatureLogger</code>
+
+Anar al directori DHT22-TemperatureLogger: 
+
+<code bash>cd /home/pi/DHT22-TemperatureLogger</code>
+
+Obrir config.json en un editor:
+
+<code bash>sudo nano config.json</code>
+
+Llistat de configuracions:
+
+<code python>
+#mysql:Configuracio de la base de dades.
+
+#sensors: Configuracions per els sensor conectats a la RPI.
+
+#name: nom dels sensor y GPIO on esta conectat.
+
+#SensorType: 22 per un dht22 .
+
+#Temperature low and high  limits per llençar els correus de alerta.
+
+#Humidity limits igual per humitat.
+
+#Threshold :llindar de activacio de advertencies.
+
+#mailInfo: Informacio per els email. 
+
+#Senderaddress: Remitent dels correus.
+
+#Receiveraddress: Receptor dels correus.
+
+#Username: nom usuari correu.
+
+#Password: password  email de enviamaent.
+
+#subjectMessage: Capçalera del correu.
+
+#subjectWarning: Motiu del correu.
+
+#sqlBackupDump: configuracio Backup dumps.
+
+#BackupDumpEnabled y/n indica si es vol backup de sql.
+
+#backupDay dia per el backup. 1-7 (Monday to Sunday) 0 daily.
+
+#backupHour hora del dump - 0-24
+
+#backupDumpPath  path on dump es guardat. Per defecte carpeta Backups.
+
+#weeklyAverages: Define si s´envien promitjos setmanals.
+
+#weeklyAveragesSendingEnabled: y significa activat.
+
+#weekDayForSendingAverages: dia de la setmana dels promitjos. 1-7 (Monday to Sunday)
+
+#hourOfTheDayForSendingAverages: hora del dia 0-24.
+
+#useFahrenheits: y enabled, n disabled. 
+
+#mailSendingTimeoutInFullHours: 0-x
+
+#Per reduir spam. A 0, logger envia mail a cada advertencia. Valors mes alts limiten els correus a un per hora. Utilitzat perque la #safata de entrada no es pleni de advertencies.
+
+#adafruitPath:  path per Adafruit_Python_DHT  per defecte/home/pi/Adafruit_Python_DHT/ Script AdafruitDHT.py.
+</code>
+
+Un cop fetes les configuracions, premer Ctrl+x y guardar amb "Y". Provar el funcionament del DHT22-TemperatureLogger :
+
+<code bash >python DHT22logger.py</code>
+
+Si tot es correcte el programa escriura a la base de dades per comprovar que es aixi entrar a la base de dades:
+
+<code bash>sudo mysql -u logger -p -h localhost</code>
+
+Posar la password corresponent. A la consola mysql:
+
+<code sql>use temperatures;
+
+select * from temperaturedata;</code>
+
+Comprovar que les lectures s´escriuen a la base de dades, per sortir:
+
+<code sql>quit</code>
+
+==== lectura automatica Sensor ====
+
+
+Afegir una tasca crontab:
+
+<code>crontab -e</code>
+
+Seleccionar opcio /bin/nano y s´obrira el crontab.
+
+Afegir al crontab la tasca (per exemple cada 15 minuts).
+
+<code>*/15 * * * * python /home/pi/DHT22-TemperatureLogger/DHT22logger.py</code>
+
+Sortir i guardar Ctrl+x seleccionant "Y" quan es pregunti.
+
+==== Configurar IP estatica Raspbian ====
+
+Per configurar una IP estática a Raspbian s´ha de edoitar el fitxer /etc/dhcpcd.conf :
+
+<code>sudo nano /etc/dhcpcd.conf</code>
+
+Si mirem el contingut veurem linies comentades (comencen amb '#') que tenen un exemple de configuració IP estática
+
+<code>
+# Example static IP configuration:
+#interface eth0
+#static ip_address=192.168.0.10/24
+#static ip6_address=fd51:42f8:caae:d92e::ff/64
+#static routers=192.168.0.1
+#static domain_name_servers=192.168.0.1 8.8.8.8 fd51:42f8:caae:d92e::1
+</code>
+
+==== thinkspeak ====
+
+
+==== Configuració del compte de ThingSpeak.com ====
+
+
+Registrar-se a https://thingspeak.com
+Si no tenim compte previ a MathWorks ThingSpeak ens redirigueix, amb la possibilitat de emprar el amteix mail per el registre a:https://www.mathworks.com.
+
+Crear un nou channel al nostre perfil i afegir dos field chart (Temperatura i Humitat).
+Obtindre el "Write API Key" del channel creat servira per configurar el script de conexio a thingspeak i enviament de dades.
+
+====Script Python per el envíament de dades al compte de ThingSpeak ts.py ====
+
+
+<code python>
+    import sys
+    import urllib2
+    import RPi.GPIO as GPIO
+    import Adafruit_DHT
+    # Write API Key ThingSpeak.com
+    miWriteAPIKey = "XXXXXXXXXXXXXXXX"
+    # Número GPIO de conexión out del sensor dht22 a RaspberryPi
+    raspiNumGPIO = "X"
+    def getSensorData():
+       RH, T = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, raspiNumGPIO)
+       return (str(RH), str(T))
+    def main():
+       print 'Iniciando...'
+       baseURL = 'https://api.thingspeak.com/update?api_key=%s' % miWriteAPIKey
+       while True:
+           try:
+               RH, T = getSensorData()
+               f = urllib2.urlopen(baseURL + "&field1=%s&field2=%s" % (RH, T))
+               print f.read()
+               f.close()
+               sleep(5)
+           except:
+               print 'Terminado.'
+               break
+    if __name__ == '__main__':
+    main()
+</code>
+==== Canvis al codi basic ====
+
+
+A miWriteAPIKey introduir la Write API Key del compte corresponent de thingspeak corresponent control-temperatures@fidmag.com.
+
+<code>miWriteAPIKey = "XXXXXXXXXXXXXXXX"</code>
+
+Canviat:
+
+<code>f = urllib2.urlopen(baseURL + "&field2=%s&field1=%s" % (RH, T))</code>
+
+S´ha canviat l´ordre per que apareixi primer la temperatura que es la dada mes rellevant.
+==== automatitzar l´enviament de dades ====
+
+
+Afegir una tasca crontab:
+
+<code bash>crontab -e</code>
+
+Seleccionar opcio /bin/nano y s´obrira el crontab.
+
+Afegir al crontab la tasca (per exemple cada 15 minuts).
+
+<code >*/15 * * * * python /home/pi/Adafruit_Python_DHT/DHT22-TemperatureLogger/ts.py</code>
+
+Sortir i guardar Ctrl+x seleccionant "Y" quan es pregunti.
+
+
+==== Canals Thingspeak ====
+
+
+  * [[https://thingspeak.com/channels/1285244/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15]]
+  * [[https://thingspeak.com/channels/1285244/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15]]
+
+==== enviament de e-mails de alerta amb thingspeak ====
+
+
+==== fer un analisi MATLAB per enviar el mail ====
+
+
+  * Obtindre una "alert API key" desde Accounts>My profile. Les API de alertes comencen amb   "TAK"
+  * Crear un nou MathLab Analysis a Apps>MathLab Analysis. Clickar "new" a la part superiort i escollir la plantilla en blanc i escriure o enganxar el seguent codi:
+ 
+
+<code>
+alert_body = 'This is the text that will be emailed';
+alert_subject = 'This will be the subject of the email';
+alert_api_key = 'YOUR_API_KEY_FROM_STEP_1';
+alert_url= "https://api.thingspeak.com/alerts/send";
+jsonmessage = sprintf(['{"subject": "%s", "body": "%s"}'], alert_subject,alert_body);
+options = weboptions("HeaderFields", {'Thingspeak-Alerts-API-Key', alert_api_key; 'Content-Type','application/json'});
+result = webwrite(alert_url, jsonmessage, options);
+</code>
+
+  * Ajustar el alert body, subject y la (alert) API key.
+  * Click "save and Run" i es rebrá un email en uns pocs instants.
+  * Conectar el MATLAB Analysis a TimeControl o React  que depengui del valor del canal en el que estas interessat.
+
+{{:fidmag:projectes:temperatures:mail.jpg?400|}}
+
+==== React App ====
+
+
+React treballa amb MATLAB® Analysis  per fer accions quan les dades del canal compleixen unes determinades condicions.
+
+==== Definir Reaccions a les dades del canal====
+
+Seleccionar Apps>React
+
+  - Click a "New React"
+  - Seleccionar Opcions
+{{:fidmag:projectes:temperatures:react.jpg?400|}}
+
+  * React name: Nom que es vol donar a la alerta
+  * Condition Type: Es pot seleccionar si la condicio es un string, numeric..etc en el nostre cas numeric
+  * Test Frecuency: Frequencia amb la que es vol comprobar la reaccio per exemple on data insertion ; cada cop que s´introduieix dades...
+  * Condition:
+  * If channel : canal de Thingspeak a analitzar
+  * Field : camp que vol analitzar exemple Field 1 temperatura
+  * Is greather than: es mes gran, es poden seleccionar altres condicions
+  * 27: Valor de llindar
+  * Action: en el nostre cas MathLab Analisys
+  * Code to execute: El nom donat al script anterior de enviament de E-mail
+  * Options: Seleccionar si es vol executar l´script cada cop que es compleix la condicio o nomes la primera vegada
+  * Save React: Guardar el módul React corresponent.
+
+
+**condition no Data Check**
+
+Al apartat condition hi ha la posibilitat de activar no data check, condicio per reaccionar en cas de que no es rebin dades procedents del sensor.Es pot configurar que si es compleix aquesta condicio s´activi el modul react corresponent.
+
+
+
+
+ 
+
+==== sql====
+<code sql>
+CREATE TABLE temperaturedata (dateandtime DATETIME, sensor VARCHAR(32), temperature DOUBLE, humidity DOUBLE);
+CREATE TABLE mailsendlog (mailsendtime DATETIME, triggedsensor VARCHAR(32), triggedlimit VARCHAR(10), lasttemperature VARCHAR(10));
+</code>
+
+==== referencies====
+  * https://www.instructables.com/Raspberry-PI-and-DHT22-temperature-and-humidity-lo/
+  * https://www.zonasystem.com/2019/05/raspberrypi-adafruit-temperatura-humedad-sensor-dht22-am2302-enviar-datos-thingspeak.html

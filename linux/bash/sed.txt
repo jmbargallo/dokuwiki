@@ -1,0 +1,94 @@
+====== sed ======
+
+Stream EDitor
+
+=== sintaxis=== 
+<code bash>
+sed [-ns] '[direccion] instruccion argumentos'
+</code>
+donde:
+  * ''-n'' : no mostrar por STDOUT las líneas procesadas
+  * ''-s'' : tratar los ficheros entrantes como flujos separados
+  * dirección: número de línea, rango de números de línea o búsqueda por regexp. Si no se especifica, afecta a todas las líneas del fichero
+  * instrucción (sobre la línea actual o procesada):
+    * ''i'' : insertar antes
+    * ''a'' : insertar después
+    * ''c'' : cambiar
+    * ''d'' : borrar
+    * ''p'' : imprimir (STDOUT)
+    * ''s'' : sustituir cadena
+    * ''r <fichero>'' : añadir contenido de fichero
+    * ''w <fichero>'' : escribir salida a fichero
+    * ''!'' : negar la condición
+    * ''q'' : finalizar procesamiento de fichero
+<code bash>
+sed 's/busca/reemplaza/g' /path/to/file(s)
+</code>
+
+=== parámetros=== 
+  * -i : actualiza el fichero "sujeto"
+  * ''s/cadena1/cadena2/g'' : sustituye cadena1 por cadena2 en todo el documento (parámetro g - global)
+  * ''s+cadena1+cadena+g'' : idem anterior (hemos cambiado el saparado de la REGEXP, por si nos interesa)
+  * ''s/abc/xyz/gI'' : (parámetro I permite sustituir ignorando si van en mayúsculas o minúsculas)
+
+=== ejemplos=== 
+reemplaza "abc" por "zyz" en el archivo1 generando el archivo2:
+<code>sed s/abc/xyz/g archivo1  > archivo2</code>
+
+actualiza el fichero, misma sustitución anterior
+<code>sed -i s/abc/xyz/g archivo1</code>
+
+idem anterior, pero con variables:
+<code>sed "s|$var1|$var2|" archivo1  > archivo2''</code>
+
+realiza una sustitución solo si la línea contiene un valor determinado, si la linea contiene **requisito**, cambia el **texto1** por el **texto2** :
+<code> sed -e "/requisito/s/texto1/texto2/g"</code>
+
+listar archivos/carpetas de una ruta:
+<code bash>ls -l | awk '{ print $NF }' | sed 1d</code>
+
+cambio temporal de prompt (PS1):
+<code bash>export PS1="C:\$( pwd | sed 's:/:\\\\\\:g' )\\> "</code>
+
+eliminar línea en concreto (la 3)
+<code bash>sed "3d" distros-deb.txt > distros-deb-ok.txt
+sed -i "3d" distros-deb.txt # reescribe el fichero</code>
+
+más eliminaciones aplicadas en un cierto rango
+<code bash>sed -i "3,5d" distros-deb.txt # de la línea 3 a la 5
+sed -i "2,$d" distros-deb.txt # de la línea 2 al final</code>
+
+ejemplo docker
+<code bash>sed -i /etc/ssh/sshd_config \
+            -e 's/#PermitRootLogin.*/PermitRootLogin no/' \
+            -e 's/#RSAAuthentication.*/RSAAuthentication yes/'  \
+            -e 's/#PasswordAuthentication.*/PasswordAuthentication no/'
+</code>
+
+=== ejemplos avanzados=== 
+añadir texto a una línea, respetando el contenido existente (y haciendo match). Uso de subexpresión (backreference)
+<code bash>sed -i "1,12s/\(host: \)[^ ]*/\1localhost/" config/database.yml</code>
+  * ''-i'' : sobrrescribe el fichero (config/database.yml en este caso)
+  * ''1,12'' : sobre ese rango de líneas
+  * ''(host: )'' : busca esa cadena, pero además la guarda. En la instrucción ( y ) están escapados <- subexpresión
+  * ''[^ ]*'' : cualquier número de caracteres que no sean espacios ??
+  * ''\1 <cadena>'' : recupera el texto guardado en la anterior expresión y le añade <cadena>.. el 1 está escapado!
+
+insertar línea antes de match, backup del fichero modificado
+<code bash>
+sed -i.bak '/<\/tomcat-users>/ i\<user username="admin" password="password" roles="admin,manager-gui,admin-gui"/>' /opt/tomcat/conf/tomcat-users.xml
+</code>
+
+=== búsquedas=== 
+buscar frases de un texto que tengas 6 palabras (y acaben en algo que no sea una letra):
+<code bash>grep -E '^([a-zA-Z]+[^a-zA-Z]+){6}$' frases</code>
+  * ''^'' inicio de frase (dentro de corchetes, es negación!)
+  * ''(...)'' : subexpresión
+  * ''[a-zA-Z]+'' : palabras
+  * ''[^a-zA-Z]+'' : y no palabras
+  * ''{6}'' : afecta a toda la subexpresión y hace que se repita 6 veces
+  * ''$'' : final de frase (línea)
+
+buscar palíndromos de 7 letras((palabra capicúa))<code bash>grep '^\(.\)\(.\)\(.\).\3\2\1$' /usr/share/dict/words</code>
+  * cada grupo de paréntesis hace que ese caracter se guarde para "futuras" referencias. El primer paréntesis se referencia como 1, el segundo...
+  * y se recogen esos valores con \3 \2 \1 respectivamente

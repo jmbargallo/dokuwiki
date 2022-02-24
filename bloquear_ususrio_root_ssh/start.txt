@@ -1,0 +1,13 @@
+Modificar la variable de PermitRootLogin yes a PermitRootLogin no en el archivo de configuración de SSH. Este está ubicado normalmente en /etc/ssh/sshd_config:
+
+<code># nano /etc/ssh/sshd_config</code>
+
+Reiniciar el servicio para aplicar los cambios.
+
+Para CentOS:
+
+<code># /etc/init.d/sshd restart</code>
+
+Para Debian/Ubuntu:
+
+<code># /etc/init.d/ssh restart</code>

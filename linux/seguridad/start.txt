@@ -1,0 +1,27 @@
+= linux seguridad
+== setup
+  * PAM
+    * su: crear un grupo tipo **permitsu** y añadir a los usuarios que pueden usar **su**
+    * passwd: crear reglas fuertes de contraseña
+  * sudoreplay
+  * sshd
+    * crear un grupo tipo "permitssh" y añadir a los usuarios que se pueden conectar por **ssh**
+    * restricción **AllowGroups**, **AllowUsers**
+    * denedar acceso ssh a **root**
+  * NTP
+  * fail2ban
+
+== system
+  * [[linux:seguridad:hackchecklist]]
+  * [[linux:seguridad:routersploit]]
+
+== pass
+  * [[linux:seguridad:hastopolis]]
+  * [[linux:seguridad:fcrackzip]]
+
+== linux
+  * [[https://noticiasseguridad.com/tutoriales/herramienta-para-romper-contrasenas-linux-todo-en-menos-de-un-minuto/]]
+    * <code bash>git clone https://github.com/huntergregal/mimipenguin</code>
+
+== passwords
+  * [[https://www.redeszone.net/tutoriales/seguridad/tiempo-hackear-contrasena/]]

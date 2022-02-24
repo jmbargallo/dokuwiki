@@ -1,0 +1,84 @@
+====== Instalar LetsEncrypt ======
+
+===== Instalar Certbot =====
+
+
+Lo primero que vamos a tener que hacer es instalar el programa Certbot para Ubuntu, que se encarga de realizar las tareas de creación del certificado en el servidor. Tenemos la versión 16.04 de Ubuntu en el servidor y los pasos los encuentras en este artículo y también en la documentación oficial en el sitio web:
+
+https://certbot.eff.org/
+
+El software que necesitamos está en los repositorios oficiales, lo instalamos con este comando:
+<code>
+apt-get install python-letsencrypt-apache
+</code>
+
+Esto nos instala el comando "letsencrypt" en el sistema, que usaremos a continuación para los siguientes pasos. 
+
+==== Instalación de los certificados y configuración de Apache automática ====
+
+En la ayuda de Certbot, en el sitio web mencionado antes, se encuentra un comando que realiza la instalación de los certificados y la configuración automática. A decir verdad en este caso ni lo he probado, porque prefiro ir paso por paso realizando las configuraciones en Apache de manera manual.
+
+Por si te animas a probarlo, el comando es:
+<code>
+letsencrypt --apache
+</code>
+
+=== Instalación del certificado y configuración de Apache manual ===
+
+
+Entonces vamos a solicitar a Let's Encrypt que realice la creación de los certificados y luego nosotros configuraremos Apache de manera manual.
+
+Los pasos serán los siguientes para crear el certificado. Primero tienes que detener Apache, si es que estuviera funcionando.
+<code>
+service apache2 stop
+</code>
+Ahora ejecutamos el comando para la creación del certificado. Será algo como esto:
+<code>
+letsencrypt certonly --standalone -d example.com
+</code>
+Algo muy típico es que quieras usar el mismo certificado para varios subdominios, por ejemplo example.com y www.example.com.
+<code>
+letsencrypt certonly --standalone -d example.com -d www.example.com
+</code>
+Nota: Para tu información en el anterior comando "certonly" crea el certificado solamente, en vez de configurar el servidor web. Por su parte --standalone crea un servidor automáticamente en tu sistema, temporalmente mientras se crea el certificado, para realizar autenticación con Let's Encrypt. La opción -d como has visto, sirve para indicar el dominio o dominios del certificado, que debe de estar instalado en el servidor.
+
+Ejecutando el comando nos saldrá una especie de asistente interactivo de línea de comandos que nos pedirá nuestro email para notificaciones de renovación y que aceptemos las condiciones del servicio.
+
+Al terminar el proceso verás una información importante, que es la ruta donde se encuentran los certificados que acaba de crear.
+
+Una vez terminado podrías tranquilamente volver a activar Apache:
+<code>
+service apache2 start
+</code>
+
+== Configurar Apache para SSL ==
+
+
+Aquí tenemos que hacer una serie de pasos que consisten en activar en Apache el servicio de SSL, algo que se hace desde la configuración del Virtual Host.
+
+Tendrás que entrar en la carpeta "/etc/apache2/sites-enabled" y encontrar el archivo de configuración de tu Virtual Host para editarlo. Generalmente tiene el nombre de tu dominio, algo como "example.com.conf".
+<code>
+vim example.com.conf
+</code>
+Nota: Obivamente, puedes usar cualquie editor de texto, quizás es más sencillo el editor "nano" para las personas que empiezan.
+
+Ahora tienes que duplicar todo el contenido del Virtual Host que tienes para el puerto 80, colocando el mismo código, pero cambiando 80 por el 443. Es decir, localizas la etiqueta:
+<code>
+<VirtualHost *:80>
+</code>
+Y el final de la etiqueta:
+<code>
+</VirtualHost>
+</code>
+Y copias esa etiqueta y todo su contenido, cambiando la etiqueta de inicio por esta otra:
+<code>
+<VirtualHost *:443>
+</code>
+Ahora le tienes que agregar las líneas necesarias para indicar dónde está el certificado que acabas de generar en el paso anterior. El código será algo como este:
+<code>
+SSLEngine on
+SSLCertificateFile /etc/letsencrypt/live/example.com/cert.pem
+SSLCertificateKeyFile /etc/letsencrypt/live/example.com/privkey.pem
+SSLCertificateChainFile /etc/letsencrypt/live/example.com/chain.pem
+</code>
+Tendrás que colocar tu nombre de dominio y estar atento que las rutas sean las correctas. Viste las rutas en el final de la creación del certificado, como salida del comando "letsencrypt". 

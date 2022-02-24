@@ -1,0 +1,30 @@
+ssd en Windows 10
+mejorar en rendimiento y la vida del disco
+
+    activar en BIOS modo AHCI
+        windows: mirar en administador de dispositivos → controladoras ATA/ATAPI
+    verificar que el modo TRIM (permite a Windows ayudar al SSD a realizar la recolección de basura)
+
+        fsutil behavior set disabledeletenotify 0
+
+    desactivar la herramienta de defragmentar → en últimas versiones W10 ya lo tiene en cuenta, no es necesario
+        windows: unidad → propiedades → herramientas → optimizar → cambiar configuración → desmarcar ejecución programada
+    desactivar indezado unidad
+        windows: unidad → propiedades → general → desmarcar indezación
+    desactivar caché escritura
+        windows: unidad → propiedades → hardware/propiedades → cambiar configuración → Directivas → desmarcar caché escritura
+    desactivar prefetch / superfetch
+        windows: detener y deshabilitar servicio
+        HKEY_LOCAL_MACHINECurrentControlSetControlSession ManagerMemory ManagementPrefetchParameters
+    desactivar Windows Search
+        detener y deshabilitar el servicio
+    valorar desactivar caché de escritura
+        Inicio → Administrador de dispositivos → <UNIDAD> → propiedades
+    desactivar limpieza archivo paginación
+        HKEY_LOCAL_MACHINECurrentControlSetControlSession ManagerMemory Management
+            ClearPageFileAtShutdown
+            LargeSystemCache
+    desactivar hibernación
+        windows: panel de control → opciones de energía → cambiar configuracion del plan
+
+/via: https://www.taringa.net/+hardwarezone/si-tienes-un-nuevo-ssd-asi-le-puedes-sacar-el-mejor-rendimiento_2ktprj

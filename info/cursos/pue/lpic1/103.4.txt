@@ -1,0 +1,23 @@
+= flujos, pipes y redirecciones
+
+  * **STDIN** : Entrada Estándar (0)
+  * **STDOUT** : Salida Estándar (1)
+  * **STDERR** : Error Estándar (2)
+
+
+  * intercambio información entre programas y/o dispositivos
+    * **redirección** :
+      * ''>'' : redirección, sobreescribiendo
+      * ''>>'' : redirección, añadiendo
+      * ''2>'' : redirección de STDERR, sobreescribiendo
+      * ''2>>'' : redirección de STDERR, añadiendo
+      * ''&>'' : redirección de STDOUT y STDERR a la vez, sobreescribiendo
+      * ''2>&1'' : redirección de STDERR a STDOUT
+      * ''2>&-'' : suprime la salida de STDERR (ni fichero, ni pantalla)
+      * '' < << <>''
+    * **canalizar (pipe)** : '' | '', ''tee''
+    * ''xargs <opciones> <comando <opciones de comando> >''
+      * '' find / -user Maria | xargs -d "\n" rm''
+      * '' rm `find / -user Maria` '' <- más limitaciones, mejor el otro
+  * ''tee''
+  * ''xargs''

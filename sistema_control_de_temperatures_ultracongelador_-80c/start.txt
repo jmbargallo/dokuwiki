@@ -1,0 +1,309 @@
+===== Sistema de control de temperatures del congelador de -80 (raspi)=====
+
+==== configuracio inicial rapsberry====
+
+Veure: [[sistema_control_de_temperatures:start|Sistema de comprovació de temperatures del CPD (raspi)]]
+==== Hardware====
+
+Per adaptar el sensor tipus PT100 es pot utilitzar el MAX31855 que pot utilitzar SPI per comunicar amb la Raspberry Pi.
+Es pot utilitzar tan el software SPI a qualsevol dels pins GPIO o es pot fer per hardware SPI.
+Si no es segur de quina opcio utilitzar es preferible utilitzar software SPI  ja que es mes flexible i la velocitat no es critica utilitzant el MAX31855.
+
+==== Hardware per utilitzar Software SPI====
+
+Per utiltzar software SPI a la Raspberry Pi connectar el MAX31855 a la Raspberry Pi com es veu a la figura. Es poden utilitzar
+3 digital IO pins qualsevol per CLK, CS, y DO.
+
+{{:fidmag:projectes:temperatures:max31855.jpg?400|}}
+
+  - Connectar Pi 3.3V a MAX31855 Vin.
+  - Connectar Pi GND a MAX31855 GND.
+  - Connectar Pi GPIO 18 a MAX31855 DO.
+  - Connectar Pi GPIO 24 a MAX31855 CS.
+  - Connectar Pi GPIO 25 a MAX31855 CLK
+  - 
+==== Software====
+
+=== Dependencies===
+
+Primer executar les dependencies escribint al terminal:
+
+<code bash>sudo apt-get update
+sudo apt-get install build-essential python-dev python-pip python-smbus git</code>
+
+=== RPi.GPIO library===
+
+Per estar segur de que les llibreries GPIO estan instalades escriure a terminal:
+
+<code bash>sudo pip install RPi.GPIO</code>
+
+=== Library MAX31855===
+
+Descarregar la llibreria Python del MAX31855 Python al home directory executant:
+
+<code bash>
+cd /home
+git clone https://github.com/adafruit/Adafruit_Python_MAX31855
+cd Adafruit_Python_MAX31855
+sudo python setup.py install
+</code>
+
+=== Configuracio i prova===
+
+Per configurar i provar el hardware/softwareTo es pot utilitzar els programes incloisos en el directori examples  i obrir  el programa simpletest.py script en un editor
+<code bash>
+sudo nano simpletest.py </code>
+
+Baixant pantalla es poden veure comentades les diverses opcions de configuracio, cal descomentar les que es facin servir:
+<code bash>
+# Uncomment one of the blocks of code below to configure your Pi or BBB to use
+# software or hardware SPI.
+# Raspberry Pi software SPI configuration.
+CLK = 25
+CS = 24
+DO = 18
+sensor = MAX31855.MAX31855(CLK, CS, DO)
+# Raspberry Pi hardware SPI configuration.
+#SPI_PORT = 0
+#SPI_DEVICE = 0
+#sensor = MAX31855.MAX31855(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE, max_speed_hz=5000000))
+# BeagleBone Black software SPI configuration.
+#CLK = 'P9_12'
+#CS = 'P9_15'
+#DO = 'P9_23'
+#sensor = MAX31855.MAX31855(CLK, CS, DO)
+# BeagleBone Black hardware SPI configuration.
+#SPI_PORT = 1
+#SPI_DEVICE = 0
+#sensor = MAX31855.MAX31855(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE, max_speed_hz=5000000))
+
+
+</code>
+
+En el nostre cas fem servir les opcions Software SPI amb la asignacio de pins que hem muntat fisicament a:
+
+
+Per defecte la configuracio per fer servir Raspberry Pi amb software SPI esta no comentada, si s´han fet canvis o s´han conectat altres pins es precis modificar la configuracio en consecuencia.
+
+Un cop la configuracio esta correctament (des)comentada es pot guardar el fitxer i sortir de l éditor de texte.
+
+Es pot provar el funcionament correcte escribint:
+
+<code bash>
+sudo python simpletest.py </code>
+
+Si tot es correcte es podra veure una sortida com la seguent:
+
+<code >
+Press Ctrl-C to quit.
+Thermocouple Temperature: 22.000*C / 71.600*F
+Internal Temperature: 23.312*C / 73.963*F
+Thermocouple Temperature: 22.250*C / 72.050*F
+Internal Temperature: 23.375*C / 74.075*F
+Thermocouple Temperature: 27.500*C / 81.500*F
+Internal Temperature: 23.312*C / 73.963*F
+...
+ </code>
+
+Per entendre el programa es pot obrir simpletest.py amb un editor de texte.El primer que es troba es:
+
+<code python>import Adafruit_MAX31855.MAX31855 as MAX31855</code>
+
+Es la importacio de la llibreria a traves de una comanda Python. A continuacio hi ha la configuracio del programa:
+
+<code python>
+# Uncomment one of the blocks of code below to configure your Pi or BBB to use
+# software or hardware SPI.
+# Raspberry Pi software SPI configuration.
+CLK = 25
+CS = 24
+DO = 18
+sensor = MAX31855.MAX31855(CLK, CS, DO)
+# Raspberry Pi hardware SPI configuration.
+#SPI_PORT = 0
+#SPI_DEVICE = 0
+#sensor = MAX31855.MAX31855(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE, max_speed_hz=5000000))
+# BeagleBone Black software SPI configuration.
+#CLK = 'P9_12'
+#CS = 'P9_15'
+#DO = 'P9_23'
+#sensor = MAX31855.MAX31855(CLK, CS, DO)
+# BeagleBone Black hardware SPI configuration.
+#SPI_PORT = 1
+#SPI_DEVICE = 0
+#sensor = MAX31855.MAX31855(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE, max_speed_hz=5000000))
+</code>
+
+La part no comentada ha de coorespondre amb el hardware.
+
+Finalment el exemple entra a  un bucle on llegeix mesures de temperatura i les imprimeix cada segon. El detall important es que hi han dues funcions de mesura de la temperatura, readTempC() y readInternalC().
+
+<code python>
+# Loop printing measurements every second.
+print 'Press Ctrl-C to quit.'
+while True:
+temp = sensor.readTempC()
+internal = sensor.readInternalC()
+print 'Thermocouple Temperature: {0:0.3F}*C / {1:0.3F}*F'.format(temp, c_to_f(temp))
+print ' Internal Temperature: {0:0.3F}*C / {1:0.3F}*F'.format(internal, c_to_f(internal))
+time.sleep(1.0)
+</code>
+
+La funcio readTempC() llegeix la temperatura de la sonda, la funcio readInternalC() llegeix la temperatura del integrat MAX31855.
+
+==== configuracio MySql/creacio base de dades per guardar dades Temperatura====
+
+Instalar Mysql/MariaDb y els complements necesaris:
+
+<code>sudo apt-get install mysql-server python-mysqldb</code>
+
+Entrar al mode consola de sql.
+
+<code>sudo mysql -u root -p -h localhost</code>
+
+Pulsar Enter per password (buit)y entrarem en la consola MariaDb 
+
+Sobre consola
+
+Primer, crear base de dades temperatures:
+
+<code sql>CREATE DATABASE temperatures;</code>
+
+Seleccionar la base de dades creada:
+
+<code sql>USE temperatures;</code>
+
+Crear usuari i garantir acces a la base de dades a aquest usuari:
+
+<code sql>CREATE USER 'logger'@'localhost' IDENTIFIED BY 'password';
+
+GRANT ALL PRIVILEGES ON temperatures.* TO 'logger'@'localhost';
+
+FLUSH PRIVILEGES;</code>
+
+El usuari/privilegis estan creats. Ara es possible cambiar de l´usuari root a aquest nou usuari:
+
+<code sql>quit</code>
+
+Tornar a conectar amb el nou usuari
+
+<code>sudo mysql -u logger -p -h localhost</code>
+
+Donar la contrasenya implementada al pas anterior.
+
+Crear  Temperaturedata per guardar les dades del sensor y data/hora .
+
+Per crear la taula:
+
+<code sql>USE temperatures;</code>
+
+Crear la primera taula amb les columnes dateandtime, sensor, temperature y humidity:
+
+<code sql>CREATE TABLE temperaturedata (dateandtime DATETIME, sensor VARCHAR(32), temperature DOUBLE, humidity DOUBLE);</code>
+
+
+Es pot confirmar, que la taula buida esta creada amb:
+
+<code sql >SELECT * FROM temperaturedata;</code>
+
+Si la taula exiteix, es veura: "Empty Set (0.00 sec)"
+
+La base de dades esta configurada es pot sortir de mysql:
+
+<code>quit</code>
+
+Reiniciar mysql perque els canvis tinguin efecte:
+
+<code>sudo /etc/init.d/mysql restart</code>
+
+
+=== Software de lectura de la sonda i escritura a base de dades==?
+
+El programa simpletest2.py llegeix la temperatura de la sonda i l´escriu a la base de dades .
+
+<code python>
+import time
+import datetime
+import Adafruit_GPIO.SPI as SPI
+import Adafruit_MAX31855.MAX31855 as MAX31855
+import sys
+import urllib2
+import mysql.connector
+
+# Raspberry Pi software SPI configuration.
+CLK = 25
+CS  = 24
+DO  = 18
+sensor = MAX31855.MAX31855(CLK, CS, DO)
+
+
+# Loop printin measurements every second.
+#print('Press Ctrl-C to quit.')
+#while True:
+temp = sensor.readTempC()
+internal = sensor.readInternalC()
+print('Temperatura: {0:0.2F} C grados '.format(temp))
+#   print('    Internal Temperature: {0:0.3F}*C / {1:0.3F}*F'.format(internal, c_to_f(internal)))
+print("Temperature Data Logger\n")
+#Open Log File
+f=open('tempdata.txt','a')
+now = datetime.datetime.now()
+timestamp = now.strftime("%Y/%m/%d %H:%M")
+outvalue = temp
+outstring = str(timestamp)+"  "+str(outvalue)+" C "+"\n"
+print outstring
+f.write(outstring)
+f.close()
+# time.sleep(1.0)
+
+conexion1=mysql.connector.connect(host="localhost",
+                                  user="jmbargallo",
+                                  passwd="antaviana92",
+                                  database="temperatures")
+cursor1=conexion1.cursor()
+
+sql="insert into temperaturedata(dateandtime, sensor, temperature, humidity) values (%s,%s,%s,%s)"
+datos=(timestamp, 2,outvalue,20.0)
+cursor1.execute(sql, datos)
+</code>
+
+=== Software per enviar les dades a Thingspeak===
+
+El programa IOT.py serveix per enviar les dades a un compte de thingspeak.
+
+<code python>
+import sys
+import urllib2
+import RPi.GPIO as GPIO
+import Adafruit_GPIO.SPI as SPI
+import Adafruit_MAX31855.MAX31855 as MAX31855
+
+# Raspberry Pi software SPI configuration.
+CLK = 25
+CS  = 24
+DO  = 18
+sensor = MAX31855.MAX31855(CLK, CS, DO)
+
+# Write API Key ThingSpeak.com
+miWriteAPIKey = "R2QX9L6O060V7ZFL"
+
+def getSensorData():
+   T = sensor.readTempC()
+   return ( str(T))
+def main():
+   print 'Iniciando...'
+   baseURL = 'https://api.thingspeak.com/update?api_key=%s' % miWriteAPIKey
+   while True:
+       try:
+           T = getSensorData()
+           f = urllib2.urlopen(baseURL + "&field3=%s&" % (T))
+           print f.read()
+           f.close()
+           sleep(5)
+       except:
+           print 'Terminado.'
+           break
+if __name__ == '__main__':
+   main()
+
+</code>

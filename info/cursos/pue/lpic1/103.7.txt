@@ -1,0 +1,34 @@
+= Expresiones Regulares
+  * existen de 2 tipos: básicas y extendidas
+  * reglas avanzadas de comparación
+    * ** [ a,b,c,d,1,2,3 ] ** : entre corchetes
+    * ** 1-9, a-z ** : rangos
+    * ** . ** : (punto) == cualquier caracter, excepto salto de línea
+    * ** ^ $ ** : marcan principio y final de línea respectivamente
+    * ** * + ? ** : indica (*) cero o más coincidencias, (+) una o más coincidencias y (?) cero o una coincidencias respectivamente
+    * **  |  ** : O lógica, 2 expresiones que puede ser cualquiera de ellas
+    * **  (  )  ** : preferencia de ejecución de la REGEXP, subexpresiones
+    * **  \  ** : caracter de escape (para signos que tienen algún significado como REGEXP
+
+== sed
+  * ''sed -i <reg_exp> fichero'' : realiza los cambios sobre el fichero directamente
+    * ''-i.bak'' : crea un fichero .bak del original antes de modificar
+
+
+=== ejemplos
+  * sustituir una palabra en medio de una cadena:<code bash>
+echo "mi mama me mima" | sed 's/\(mam\)[^ ]*/papa/'
+# -> mi papa me mima</code>
+
+== grep
+  * <code bash>$ grep [opciones] EXP_REG [archivos]</code>
+    * **-c ó --count** : cuenta las líneas en lugar de las coincidencias
+    * **-f ó --file** : archivo de entrada que indica patrón de búsqueda
+    * **-i ó --ignore-case**
+    * **-r ó --recursive**
+    * **-F ó --fixed-strings** : cambia de modo de búsqueda a modo cadena en lugar de REG-EXP
+    * **-E ó -extended-regexp** : usa expresiones regulares extendidas
+    * Ejemplos:
+      * <code bash>$ grep eth[01] /etc/*</code> : busca cadenas "eth0" y "eth1" en los ficheros de /etc/
+      * <code bash>$ grep -E "(twain\.example\.com|bronto\.pangea\.edu).*127" /etc/*</code> : busca twain.example.com, bronto.pangea.edu, seguido, en la misma línea, por el número 127
+      * <code bash>$ ps aux | grep xterm</code> : filtra la salida del comando mostrando solo los que coínciden con la expresión buscada

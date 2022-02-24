@@ -1,0 +1,94 @@
+= LPIC2 2021 Sesión 14 (2021-03-18)
+== Documentación relacionada:
+  * Manual Certificacion LPIC-2.pdf, pag XX
+  * Material Practicas LPIC-2/LPIC-202/
+  * Presentaciones/2020/202/
+  * gdrive:%%//%%
+
+== Clase
+=== E-Mail Services
+  * DOC: pag 383
+  * smart host relay: delegar a otro SMTP el envío real
+
+==== sendmail
+  * DOC: Material Practicas LPIC-2/LPIC-202/4-E-Mail Services/Laboratorio Servidor de correo-Centos7.pdf
+  * ''yum install -y sendmail sendmail-cf''
+  * **/etc/mail**
+    * sendmail.mc: fichero de macros
+      * **dnl**: comentarios
+      * descomentando **define(`SMART_HOST', `smtp.your.provider')** definimos a quien vamos a delegar el envío real del mensaje. Sin autenticación (no apto para Gmails y similares)
+    * sendmail.cf: fichero compilado del .mc
+      * ''make -C /etc/mail''
+  * **/etc/aliases**
+    * listas de correo "locales"
+      * informatica: <user-local>, <user@dominio>
+    * ''newaliases'' para aplicar los cambios
+  * ''netstat -putan | grep -i listen''
+  * relay a través de GMAIL: [[https://www.lotar.altervista.org/wiki/en/how-to/sendmail-and-gmail-relay]]
+    * activar aplicaciones poco seguras en gmail para poder enviar
+  * **/var/log/maillog**
+  * ''mailq'': mensajes encolados
+    * **/var/spool/mqueue**
+  * **~/.forward**: dirección de reenvio de los mensajes
+  * ''mail''
+  * TIPs: mailman para gestión de listas de correo
+  * rspamd: aka spam assassin
+
+==== Laboratorio
+  * sendmail
+    * <code ; /etc/mail/sendmail.mc></code>
+    * ''make -C /etc/mail''
+    * ''systemctl restart sendmail''
+  * dovecot
+    * ''yum install -y dovecot''
+    * <code /etc/dovecot/dovecot.conf>
+</code>
+    * <code /etc/dovecot/conf.d/10.mail.conf></code>
+    * <code /etc/procmailrc></code>
+    * ''yum install -y mailx'': cliente mail
+  * ''mkdir /etc/skel/Maildir'': estructura que se crea al crear un nuevo usuario
+  * **/etc/rsyslog.conf**
+    * el guión delante de la sección **mail.%%*%%** hace que la escritura a disco sea asíncrona (memoria->disco)
+
+==== TIP: logs remotos
+  * Provider(s). descomentar **UDP**
+  * ''systemctl restart rsyslog''
+  * en la máquina que ha de enviar los logs:
+    * **@192.168.2.5** en las rules que queramos. Arroba por ser UDP. Si es TCP son 2 arrobas
+  * ''logger''
+  * herramientas:
+    * grafana, elastic
+    * https://www.overops.com/blog/las-7-herramientas-para-el-manejo-de-logs-registros-que-todo-desarrollador-java-debe-conocer/ -> graylog
+    * logAnalyzer (php) -> [[https://loganalyzer.adiscon.com/]]
+  * para recursos:
+   * https://checkmk.com/
+   * zabbix
+     * [[https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-zabbix-to-securely-monitor-remote-servers-on-ubuntu-20-04-es]]
+     * [[https://techexpert.tips/es/zabbix-es/zabbix-monitor-windows-utilizando-agent/]]
+   * DOC: Laboratorio configuración del sistema de registros de Red Hat 7.pdf
+
+=== SSH
+  * DOC: Material Practicas LPIC-2/LPIC-202/5-Configuracion de OpenSSH/
+    * Configurar SSHd.txt
+    * Configuración de OpenSSH.pdf
+    * **/etc/ssh/sshd_config**
+      * **Port**
+      * **ListenAddress**
+      * **PermitRootLogin** = no
+      * **X11Forwarding**: reenvio X-Windows
+      * **AllowUsers**, **AllowGroups**, **DenyUsers**, **DenyGroups**: al final del fichero
+        * filtrado usuario o usuario@ip
+      * **UseDNS** = no: no resolver la IP
+    * clientes
+      * ''ssh user@direccion''
+      * ''ssh -p <puerto> user@direccion''
+      * ''sftp -o Port=xxxx user@direccio''
+      * ''scp -P xxxxx user@direcion...''
+    * DOC: Túneles SSH.pdf
+    * DOC: Presentacion SSH.pdf, pag. 10-15 (opciones del fichero sshd_config)
+  * opciones generales:{{ :info:cursos:pue:lpic2-2021:pasted:20210323-102438.png?700 }}
+  * opciones de configuración de acceso:{{ :info:cursos:pue:lpic2-2021:pasted:20210323-102510.png?700 }}
+{{ :info:cursos:pue:lpic2-2021:pasted:20210323-102534.png?700 }}
+  * opciones de usuarios y grupos:{{ :info:cursos:pue:lpic2-2021:pasted:20210323-102613.png?700 }}
+  * opciones de reenvío de conexiones X11:{{ :info:cursos:pue:lpic2-2021:pasted:20210323-102738.png?700 }}
+  * otras opciones: {{ :info:cursos:pue:lpic2-2021:pasted:20210323-102811.png?700 }}

@@ -1,0 +1,41 @@
+====== tar ======
+
+=== comprimir=== 
+  * ''tar -czvf <file>.tgz <dir>''
+  * dónde:
+    * **c** : indica comprimir
+    * **z** : usar gzip como formato de compresión
+    * **v** : verbose, mostrar información mientras trabaja
+    * **f** : fichero TAR a crear
+
+=== descomprimir=== 
+  * ''tar -xzvf <file>.tgz''
+  * dónde:
+    * x : extraer
+
+=== comprimir + encriptar=== 
+  * ''tar --create --file - --posix --gzip -- <dir> | openssl enc -e -aes256 -out <file>''
+
+=== descomprimir + desencriptar=== 
+  * ''openssl enc -d -aes256 -in <file> | tar --extract --file - --gzip''
+
+=== comprobar=== 
+  * ''gunzip -t fichero.tar.gz'' -> solo comprobamos la compresión
+  * ''gunzip -c fichero.tar.gz | tar t > /dev/null'' -> comprobamos la compresión y el tar, pero descartamos la salida
+
+=== completo + incremental=== 
+  * ''tar cpf /path/to/complete-file.tar -g /path/to/register.snar /path/backup''
+  * ''tar cpf /path/to/incremental-file.tar -g /path/to/register.snar /path/backup''
+  * y así mientras se quiera.
+  * Para hacer la restauración, se empieza por el completo y se continúa con los incrementales.
+  * **-M**: múltiple volumen
+  * **-L**: tamaño volumen
+
+=== útiles=== 
+  * ''tar ztf /path/to/file.tar.gz | xargs -d'\n' rm -v'' : eliminar los ficheros de una extración incorrecta de un TAR
+  * ''tar ... --exclude=/path/to/dir''
+  * ''tar ... -X /path/to/exclude-list.txt''
+    * ''tar ... --exclude-from "exclude-list.txt"''
+  * ''tar ... --exclude-tag-all=exclude.tag'' : establece un fichero que sirve para indicar que no ha de hacer backup de ese directorio
+
+/vía: [[https://stackoverflow.com/questions/984204/shell-command-to-tar-directory-excluding-certain-files-folders]]

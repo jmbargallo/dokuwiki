@@ -1,0 +1,24 @@
+====== boot ======
+
+=== apuntes UEFI=== 
+  * BIOS
+  * UEFI
+    * EFI (FS de UEFI)
+=== opciones a tocar en BIOS y/o Windows=== 
+  * FastBoot - Enabeld
+  * Secure Boot - Disabled
+  * CSM/Legacy - Disabled
+
+
+=== enlaces=== 
+  * [[https://ubuntuforums.org/showthread.php?t=2267259]] !!!
+  * [[http://www.welivesecurity.com/la-es/2013/12/18/como-activar-modo-uefi-secure-boot-windows-8/]]
+  * [[http://www.welivesecurity.com/la-es/2014/06/13/diferencias-entre-bios-y-uefi-como-protegerlos/]]
+  * [[https://msdn.microsoft.com/es-es/library/windows/hardware/dn898540(v=vs.85).aspx]]
+  * [[http://desarrollolinuxero.blogspot.com.es/2013/11/como-desactivar-el-secure-boot-y-uefi.html]]
+
+=== enlaces PIPO=== 
+  * [[http://forum.xda-developers.com/windows-8-rt/general/dual-booting-ubuntu-windows-8-1-pipo-w2-t2926413]]
+  * [[http://askubuntu.com/questions/720943/ubuntu-server-edition-uefi-mini-pc]]
+  * [[https://plus.google.com/+IanMORRISON/posts/UNWdwRMqy3j]]
+  * [[http://freaktab.com/forum/tv-player-support/intel-based-tv-players/pipo-x7-tv-player/22820-pipo-x7-os-linux]]

@@ -1,0 +1,5 @@
+====== sudo ======
+
+=== sudo sin password=== 
+  * editar **/etc/sudoers** <- ''sudo visudo''
+  * añadir al final del fichero:<code><username>     ALL=(ALL) NOPASSWD:ALL</code>

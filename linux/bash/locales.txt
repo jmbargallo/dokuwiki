@@ -1,0 +1,75 @@
+= Locales
+{{tag>linux bash}}
+== variables
+  * ''LANG'' : establece el valor del lenguaje (y de LC_*) usado en el sistema
+  * ''LC_ALL'' : establece el valor de todas las categorias y tiene prefereencia
+  * definidos por POSIX
+    * ''LC_COLLATE'' : funciones de cadena
+    * ''LC_CTYPE'' : establece el comportamiento de funciones que tengan que ver con la convención de mayúsculas/minúsculas
+    * ''LC_MESSAGES'' : message catalogs ¿?
+    * ''LC_MONETARY'' : formato de moneda
+    * ''LC_NUMERIC'' : formato numérico
+    * ''LC_TIME'' : formato de fechas y horas
+
+== configuración
+listado de **locales** instalados en el sistema: <code bash>locale -a</code>
+listado de **locales** en sistemas debian/ubuntu: <code bash>less /usr/share/i18n/SUPPORTED</code>
+
+
+<code bash>
+sudo locale-gen en_IN
+sudo locale-gen en_IN.UTF-8
+sudo update-locale
+</code>
+
+<code bash>
+$ export LANG=en_US.utf8
+$ export LC_ALL=en_US.utf8
+$ sudo dpkg-reconfigure locales
+</code>
+con ''sudo dpkg-reconfigure locales'' se pueden añadir más (por ejemplo, cuando conectas via SSH a un servidor remoto que no las tiene instaladas)
+
+para un usuario:
+<code bash "~/.bash_profile">
+LANG="en_IN.utf8"
+export LANG
+</code>
+<code bash "~/.i18n">
+LANG="en_US.UTF-8"
+SUPPORTED="en_IN.utf8:en_IN:en_US.UTF-8:en_US:en"
+SYSFONT="latarcyrheb-sun16"
+</code>
+
+== detalles
+
+<code bash>
+$ locale
+LANG=en_US.utf8
+LANGUAGE=
+LC_CTYPE="en_US.utf8"
+LC_NUMERIC="en_US.utf8"
+LC_TIME="en_US.utf8"
+LC_COLLATE="en_US.utf8"
+LC_MONETARY="en_US.utf8"
+LC_MESSAGES="en_US.utf8"
+LC_PAPER="en_US.utf8"
+LC_NAME="en_US.utf8"
+LC_ADDRESS="en_US.utf8"
+LC_TELEPHONE="en_US.utf8"
+LC_MEASUREMENT="en_US.utf8"
+LC_IDENTIFICATION="en_US.utf8"
+LC_ALL=en_US.utf8
+</code>
+mostrar detalle de las categorias POSIX: <code bash>locale -k LC_NUMERIC
+decimal_point=","
+thousands_sep=""
+grouping=-1;-1
+numeric-decimal-point-wc=44
+numeric-thousands-sep-wc=0
+numeric-codeset="UTF-8"
+</code>
+
+== + info
+  * [[https://gerardnico.com/linux/locale]]
+  * [[https://stackoverflow.com/questions/30479607/explain-the-effects-of-export-lang-lc-ctype-lc-all]]
+  * [[https://www.cyberciti.biz/faq/how-to-set-locales-i18n-on-a-linux-unix/]]

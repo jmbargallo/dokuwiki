@@ -1,0 +1,16 @@
+====== linux comandos dispositivos de bloque ======
+
+  * ''lsblk'': todos los discos, pero no tipo
+    * ''lsblk -S'': SCSI
+  * ''ls -lF /dev/disk/by-id/''
+  * ''blkid'': solo montados
+  * ''hdparm -I <dispositivo>''
+  * ''lshw''
+    * ''lshw %%--%%class disk %%--%%class storage''
+    * ''lshw -short %%--%%class disk %%--%%class storage''
+  * ''fdisk -l''
+    * ''fdisk -l | grep %%'%%^Disk /dev/%%'%%''
+    * ''fdisk -l | grep %%'%%^/dev/%%'%%''
+    * ''fdisk -l | grep '^Disk /dev/' | egrep -v '/dev/(loop|mapper|md)%%'%%''
+
+/via: [[https://www.cyberciti.biz/faq/find-hard-disk-hardware-specs-on-linux/]]

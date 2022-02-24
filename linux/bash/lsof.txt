@@ -1,0 +1,15 @@
+====== lsof ======
+
+El comando lsof es un comando integrado en Linux gracias al cual podemos obtener información sobre los archivos que se abren por procesos en el sistema, es decir, lsof se encarga de listar los ficheros abiertos en la distribución de Linux usada.
+  * ver procesos vinculados a un fichero:<code bash>lsof /dev/null</code>
+  * ver ficheros abiertos por usuario determinado:<code bash>lsof -u <USER></code>
+  * Mostrar detalles de un servicio de protocolo: <code bash>sudo lsof -i TCP
+sudo lsof -i TCP:80</code>
+  * Ver actividad de red actual: <code bash>lsof -i</code>
+  * Validar los servicios y/o puertos que están escuchando: <code bash>lsof -i -nP</code>
+  * Listar archivos por direccionamiento:<code bash>lsof -i 4 # Direccionamiento IPv4
+lsof -i 6 #Direccionamiento IPv6</code>
+  * ver los archivos abiertos por un proceso o programa en específico: <code bash>lsof -c cupsd</code>
+  * observar los archivos que están abiertos en un directorio específico: <code bash>sudo lsof +D /etc</code>
+
+/via: [[https://www.solvetic.com/tutoriales/article/7513-ver-que-proceso-y-quien-esta-usando-un-archivo-linux/]]

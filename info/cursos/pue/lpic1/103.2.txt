@@ -1,0 +1,77 @@
+= 103.2 - filtros
+  * filtrado de texto
+    * ''cat primero.txt segundo.txt > combinado.txt''
+      * **-E ó --show-ends**
+      * **-n ó --number**
+      * **-b ó --number-nonblank**
+      * **-s ó --squeeze-blank**
+      * **-T ó --show-tabs**
+      * **-v ó --show-nonprinting**
+    * ''tac''
+    * ''join'' : junta 2 archivos, línea a línea, con un campo en común (?)
+      * **-t <caracter separados campos>**
+      * **-i** : ignorecase
+      * **-1 <campo>** : indica del primer documento el campo a tener en cuenta
+      * **-2 <campo>** : indica del segundo documento el campo a tener en cuenta
+      * 
+    * ''paste'' : fusiona las líneas 1 a 1 separadas por <tab>, para ficheros sin campo común
+    * ''expand'' : tabulaciones en espacios
+      * **-t <n> ó --tabs=<n>** : cambia el espaciado por defecto de 8
+    * ''unexpand'' : reverse de expand
+    * ''od'' : octal dump
+      * **-c** : muestra caracteres, los que tocan "escapados" o en octal
+      * **-tx** : volcado en hex
+      * **-td** : volcado decimal con signo
+    * ''sort'' : ordenar
+      * **-f ó --ignore-case**
+      * **-M ó --month-sort**
+      * **-n ó --numeric-sort**
+      * **-r ó --reverse**
+      * **-k <campo>[,<campo>]** : ordena por campo(s)
+    * ''split <ficheros_in> <prefijo_fichero_out>''
+      * **-b <tamaño> ó --bytes=<tamaño>** : corta al tamaño especificado exactamente
+      * **-C <bytes>ó --line-bytes=<tamaño>** : corta al tamaño especificado teniendo en cuenta salos de línea
+      * **-l <líneas> ó --lines=<líneas>**
+    * ''tr <busqueda> <sustitución>'' : traducir caracteres
+      * **tr XYZ xyz < fichero**
+      * **cat fichero | tr XYZ xyz**
+      * si el grupo de búsqueda es mayor que el de sustitución, se usa el último de sustitución para todos los "de demás" que haya en búsqueda
+      * **-d <grupo>** : elimina los caracteres estipulados
+      * **-s 'char'** : elimina las repeticiones del char consecutivas (eliminar espacios de más)
+      * admite formato POSIX ([:alnum:], [:upper:], [:lower:], [:digit:], [A-Z], ...)
+    * ''uniq'' : elimina líneas duplicadas (después de sort)
+    * ''fmt'' : da formato a texto (líneas demasiado largas, párrafos separados
+      * **-w ó --width** : cambiar el ancho de 75
+    * ''nl'' : numera líneas, muy configurable (formato numeración, formato páginas, numeración páginas)
+      * **-b** : númera las líneas en blanco
+    * ''pr'' : preprarar archivo para imprimir
+      * **-d** : doble espacio
+      * **-l** : lineas por página
+      * **-f** : forzar envío saltos línea
+
+== visualizar archivos
+  * ''head''
+    * **-n <num> ó --lines=<num>**
+    * **-c <num> ó --bytes=<num>**
+  * ''tail''
+    * **-n <num> ó --lines=<num>**
+    * **-c <num> ó --bytes=<num>**
+    * **-f ó --follow**
+    * **--pid=<pid>** : deja el seguimiento -f cuando <pid> se extinge
+  * ''less''
+    * **espacio, flechas**
+    * **/buscar**
+    * **n,N** : siguiente, anterior término de la búsqueda
+    * **g <linea>**
+    * **h** : ayuda
+    * **q** : salir
+  * ''cut''
+    * **-f ó --fields=** : lista de campos (separador por defecto <tab>)
+    * **-d ó --delimiter=** : caracter separador
+    * **-b ó --bytes** : idem -f pero para bytes
+    * **-c ó --characteres**
+  * ''wc''
+    * **-l ó --lines**
+    * **-m ó --chars**
+    * **-w ó --words**
+

@@ -1,0 +1,32 @@
+= linux desktop
+== que escritorios disponibles?
+  * <code bash>ps -a | egrep -i "gnome|kde|mate|cinnamon|lxde|xfce|jwm"</code>
+  * <code bash>systemctl status display-manager</code>
+  * <code bash>ls /usr/bin/*session</code>
+  * screenfetch: <code bash>git clone git://github.com/KittyKatt/screenFetch.git screenfetch
+./screenfetch-dev</code>
+
+== distros
+  * [[linux:debian:start]]
+  * [[linux:redhat:start]]
+  * [[linux:alpine:start]]
+  * [[linux:kdeneon:start]]
+  * [[linux:centos:start]]
+  * [[linux:ubuntu:start]]
+
+== desktop
+  * [[linux:desktop:sticks:start]]
+
+
+=== guia migración
+  * [[linux:desktop:debian8jessy]]
+
+=== tips
+  * [[linux:desktop:mint18]]
+
+=== utilidades GUI
+  * [[linux:desktop:repositorios]]
+  * [[linux:desktop:codecs]]
+  * [[linux:desktop:impresora]]
+  * [[https://blog.desdelinux.net/aptik-realiza-un-backup-de-tus-repositorios-temas-programas-y-configuraciones/]]
+

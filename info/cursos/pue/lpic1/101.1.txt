@@ -1,0 +1,50 @@
+======  101.1 Determinar y configurar parámetros de hardware ======
+
+===== configurar el firmware y el núcleo del hardware =====
+
+núcleo de hardware: CPU + Memoria
+===firmware:===
+  * herramientas de configuración e inicio de arranque del SO
+  * gestiona: interrupciones, direcciones E/S, DMA, Reloj de tiempo real, interfaces ATA
+  * cada dispositivo puede disponer de su firmware, pero el principal será el de la placa base
+    * BIOS <- objetivo de examen
+      * proporcionar servicios E/S al SO para aislarlos de los cambios de Hardware
+      * Linux no usa estos servicios (y desde kernel 3.5.0 menos funciones EFI)
+    * EFI (técnicamente no es una BIOS)  <- NO objetivo de examen
+    * UEFI (EFI v2.0) <- NO objetivo de examen
+    * OpenFirmware (procesadores PowerPC)
+  * EEPROM (memoria de solo lectura programable y borrable electrónicamente)
+  * Proceso de encendido:
+    * autodiagnóstico de encendido (POST)
+    * inicialización de hardware
+    * carga el LOADER desde el dispositivo de inicio
+    * transfiere la ejecución al LOADER, que cargará el SO
+  * prestación clave es activar o desactivar hardware de la placa
+
+=== IRQ ===
+petición de interrupción : solicitud a la CPU de que deje lo que está haciendo y atienda otra solicitud
+  * plataformas x86: 0-15
+
+
+^ IRQ ^ Uso ^ Notas ^
+|  0  | Reloj de sistema | uso interno |
+|  1  | Teclado | |
+|  2  | Gestión intervalo IRQ 8-15 | El sistema X86 original solo soportaba el uso de 8 IRQ |
+|  3  | COM2 | y también COM4 |
+|  4  | COM1 | y también COM3 |
+|  5  | LPT2 o tarjeta de Audio | |
+|  6  | FDD | |
+|  7  | LPT1 |
+|  8  | Reloj de tiempo real | reservado exclusivamente para el reloj del sistema |
+|  9  | ACPI | Advanced Configuracion and Power Interface |
+| 10  | <libre> |
+| 11  | <libre> |
+| 12  | ratón PS2 |
+| 13  | coprocesador matemático |
+| 14  | ATA primario |
+| 15  | ATA secundario |
+  * plataformas x86-64 : +15
+  * BUS ISA
+    * en deshuso desde 2001
+    * imposibilidad de compartir IRQ entre dispositivos
+  * BUS PCI

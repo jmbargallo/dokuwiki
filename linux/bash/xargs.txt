@@ -1,0 +1,19 @@
+====== xargs ======
+
+Existen ocasiones en el que el número de ficheros a tratar es demasiado grande y llena el buffer del bash destinado a la expansión de los comodines que realiza el BASH (''rm -fr *'', por ejemplo, se transforma en ''rm fichero1 ficher2 fichero3 etc...'')
+
+XARGS permite coger esa lista (proviniente de un ''ls'', por ejemplo) y ejecutar un comando determinado fichero a fichero en lugar de todos a la vez: ''$ ls | xargs rm -fr''
+
+=== argumentos=== 
+  * -t : permite ver el comando antes de ejecutarlo
+  * -n<num> : número de parámetros que pasaremos. De la rista que nos llega, podemos dividirlos en grupos de <num>. Ejemplo: ''$ echo 1 2 3 4 | xargs -n2''
+  * -I <param> : asigna el parámetro recibido a una "variable" <param> para que la coloquemos donde corresponda al ejecutar un comando: ''ls | xargs -I ARG echo antes ARG despues''. A veces se usa ''{}''
+  * -P <num> : número de procesos en paralelo que lanzar
+  * -0 (cero) : limpia de saltos de linea y controla los espacios en blanco
+  * -L <num> : concatena <num> parámetros en 1 sola línea (un poco a la inversa de -n. ''$ ls | xargs -L4''
+  * -d<lim> : establece el limitador de separador en <lim>
+  * -a <file> : lee de fichero en lugar de STDIN
+
+=== ejemplos=== 
+  * copiar de una lista de ficheros:<code bash>xargs --arg-file=lista.txt --verbose cp -t dest</code>
+    * ''cp -t <destino>''

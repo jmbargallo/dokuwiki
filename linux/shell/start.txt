@@ -1,0 +1,36 @@
+====== linux shell ======
+
+
+  * [[linux:bash:comandos|]]
+  * [[linux:bash:automatizacion]]
+  * [[linux:bash:zonahoraria]]
+  * [[linux:bash:locales]]
+  * [[linux:scripts:start]]
+  * traps y señales:
+    * [[http://www.marqueta.org/traps-y-senales-en-bash-i/]]
+    * [[http://www.marqueta.org/traps-y-senales-en-bash-ii/]]
+  * [[linux:bash:environment]]
+  * [[linux:bash:grub]]
+
+=== bash=== 
+  * [[linux:bash:start|]]
+    * [[linux:bash:shellvariables|]]
+    * [[linux:bash:historyexpansion|]]
+    * [[linux:bash:braceexpansion|]]
+    * [[linux:bash:estructurasdecontrol|Estructuras de control y bucles]]
+    * [[linux:bash:heredoc]]
+
+=== zsh=== 
+  * [[linux:zsh:start]]
+
+=== tutoriales y guías=== 
+  * [[https://gtfobins.github.io/|GTFOBins, comandos que hacen pupa]]
+  * [[http://etxea.net/docu/taller_bash/bash.html|bash scripting rápido]]
+  * [[https://linuxconfig.org/bash-scripting-tutorial]]
+  * {{:linux:cli-commands.png?linkonly| resumen comandos cli básicos}}
+  * {{:linux:ubuntu_usefull_wallpaper.png?linkonly| resumen comandos cli ubuntu}}
+  * [[https://www.explainshell.com/]]
+
+=== personalización=== 
+  * [[linux:bash:ps1]]
+  * [[linux:bash:ifs]]

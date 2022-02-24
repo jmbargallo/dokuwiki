@@ -1,0 +1,27 @@
+= Zona Horaria
+{{tag>linux bash}}
+== modificación temporal 
+establecer la variable TZ a la zona horaria de interés: ''export TZ=Europe/Andorra''
+  * [[https://superuser.com/questions/188224/temporarily-change-timezone-to-display-date-time-shown-during-an-ssh-session]]
+  * [[https://en.wikipedia.org/wiki/List_of_tz_database_time_zones]]
+  * ''timedatectl set-timezone “Europe/Madrid”'': cambio de zona en caliente
+
+=== consideraciones crontab
+  * el uso de la variable TZ no afecta a la hora de la ejecución de los trabajos crontab
+  * la definición de la variable TZ en el script de crontab solo afecta a los programas que se ejecutan, no a la hora de ejecución
+  * ''CRON_TZ'' ?
+  * [[http://man.he.net/man5/crontab]]
+
+
+== modificación permanente
+  - modificar el fichero ubicado en ''/etc/localtime''
+    * copiar o enlazar con el fichero correcto en ''/usr/share/zoneinfo/Europe/Andorra''
+  - añadir el fichero ''/etc/timezone'' con el contenido de TZ, por ejemplo: **Europe/Androrra**
+/via: [[https://linuxacademy.com/blog/linux/changing-the-time-zone-in-linux-command-line/]]
+
+== time syncronization
+  * [[https://feeding.cloud.geek.nz/posts/time-synchronization-with-ntp-and-systemd/]]
+  * [[https://echaleunvistazo.wordpress.com/2015/02/17/configurar-servidor-ntp-en-ubuntu/]]
+  * [[http://manpages.ubuntu.com/manpages/xenial/man1/timedatectl.1.html]]
+  * [[https://serverfault.com/questions/303517/how-time-is-affected-by-the-ntpd-and-etc-localtime]]
+  * [[https://coreos.com/os/docs/latest/configuring-date-and-timezone.html]]

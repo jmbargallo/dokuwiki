@@ -1,0 +1,17 @@
+= environment
+== global system 
+  * ''/etc/environment''
+  * ''/etc/profile.d/<script>''
+
+== apache
+  * ''/etc/apache2/envvars'' + service restart
+
+== remote conn
+<code bash>
+if [[ -z "$REMOTEHOST" &&  -z  "$SSH_CLIENT"  ]]; then
+  echo "Cliente conectado en local";
+else
+  echo "Cliente conectado en remoto";
+fi
+</code>
+/via:[[http://blog.rodrigorega.es/distinguir-una-sesion-local-de-una-remota-en-linux/]]

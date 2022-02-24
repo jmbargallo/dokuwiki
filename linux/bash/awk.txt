@@ -1,0 +1,48 @@
+====== awk ======
+
+/via: [[https://www.howtogeek.com/562941/how-to-use-the-awk-command-on-linux/]]
+  * rule = pattern + action
+  * todo el comando entre comillas simples
+  * ''print''
+    * $1,$3,$7: campo 1, 3 y 7 respectivamente (separados por espacio por defecto)
+    * $NF: último campo
+    * $0 : la línea entera
+  * cambiar carácter separador: **OFS="<char>"**
+  * ''BEGIN'' y ''END'' se ejecutan antes y después de procesar el texto, en su propio ámbito **{ }**
+  * **-F'<char_separador>'**: parámetro (previo a sección de procesado) para indicar el caracter separador de campos
+  * patrones:
+    * debe preceder inmediatamente a la acción que se ha de ejecutar:<code bash>awk -F: '$3 >= 1000 {print $1,$6}' /etc/passwd</code>
+    * los patrones hacen uso de [[https://en.wikipedia.org/wiki/Regular_expression|expresiones regulares]]:<code bash>awk '/UUID/ {print $0}' /etc/fstab</code><code bash>awk '/^UUID/ {print $0}' /etc/fstab</code>
+  * [[https://www.gnu.org/software/gawk/manual/gawk.html#Built_002din|funciones internas]]
+  * si el comando es demasiado complejo, se pueda usar como script:<code awk; omit.awk>#!/usr/bin/awk -f
+
+BEGIN {
+  # set the input and output field separators
+  FS=":"
+  OFS=":"
+  # zero the accounts counter
+  accounts=0
+}
+{
+  # set field 2 to nothing
+  $2=""
+  # print the entire line
+  print $0
+  # count another account
+  accounts++
+}
+END {
+  # print the results
+  print accounts " accounts.\n"
+}</code>
+    * <code bash>chmod +x omit.awk
+./omit.awk <file></code>
+
+=== ejemplos===
+  * buscar líneas con 3 palabras solo: <code bash>awk '{ if ( NF == 3 ) print } ' /path/to/input</code>
+  * calcular valor mínimo: <code bash>seq 1 10 | awk 'NR==1 { MIN=$1; next }  $1 < MIN { MIN=$1 } END{ print MIN }'</code>
+  * calcular valor máximo: <code bash>seq 1 10 | awk 'NR==1 { MAX=$1; next } $1 > MAX { MAX=$1 } END{ print MAX }'</code>
+  * calcular valor medio: <code bash>seq 1 10 | awk '{ SUM+=$1 } END { print SUM/NR}'</code>
+  * excluir las 2 primeras columnas:<code bash>awk '{ $1=""; $2=""; print}' filename</code>
+  * cambiar el separador de columnas:<code bash>awk -F':' '{ $1=""; $2=""; print}' filename</code>
+  * líneas que empiecen por número hexadecimal de 7 dígitos y 2 espacios (vagrant global-status):<code bash>awk '/^[a-f0-9]{1,7}\s+/ {print $5}'</code>

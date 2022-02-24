@@ -1,0 +1,13 @@
+= 103.6 - Modificar las prioridades de ejecución de procesos
+== prioridades de procesos
+se puede cambiar la prioridad de un proceso (al ejecutarlo o ya en ejecución) subíendo o bajando la misma.\\
+estos valores van de -20 (más prioridad) a +19 (menos prioridad)\\
+un programa sin ''nice'' o ''renice'' arranca con una prioridad 0
+  * ''nice'' : establece prioridad de uso de un programa en el momento de ejecutarlo
+    * si no se indica prioridad a ''nice'' se establece por defecto a 10
+    * <code bash>nice -<prioridad> <programa></code> <- el guión es indicativo de parámetro <code bash>nice --20 <programa>; # establece -20 a la prioridad</code>
+    * <code bash>nice -n <prioridad> <programa></code>
+    * <code bash>nice --adjustment=<prioridad> <programa></code>
+  * ''renice'' :
+    * <code bash>renice [prioridad] [-p pids] [-g prgrps] [-u usuarios]</code>
+

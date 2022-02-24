@@ -1,0 +1,55 @@
+= linux filesystem
+  * [[linux:fsh:start]]
+    * [[linux:fsh:sys]]
+  * [[linux:swap]]
+  * [[linux:filesystem:luks]]
+  * [[linux:mount:start|]]
+  * [[linux:filesystem:glusterfs]]
+  * [[linux:filesystem:udisks]]
+  * [[linux:filesystem:inodes]]
+== clonación y recuperación
+  * distro clonación: [[http://clonezilla.org/]]
+    * [[https://www.taringa.net/posts/linux/8551870/Procedimiento-para-realizar-clonado-perfecto-de-discos-duros.html]]
+  * recuperación: [[http://www.forensicswiki.org/wiki/Ddrescue]]
+    * [[https://ubuntuforums.org/showthread.php?t=1409117]]
+
+== Test Disk & Recovery
+  * [[http://www.cgsecurity.org/wiki/TestDisk_Download]]
+  * [[http://www.linuxforu.com/2012/05/how-to-recover-deleted-files-linux-1/]]
+
+== clonar disco en imagen (para recuperación)
+=== ddrescue
+  * instalación: <code bash>sudo apt install gddrescue</code>
+  * uso: <code bash>ddrescue /dev/sdX imagen.img log-file</code>
+    * **log-file** importante para poder parar y continuar el trabajo
+    * ddrescueview (GUI para ver progreso):
+{{ :linux:filesystem:pasted:20210201-075156.png }}
+
+=== photorec
+  * recuperació fitxers (des de disc o imatge de disc/partició)
+  * paquet testdisk
+  * [[https://www.cgsecurity.org/wiki/PhotoRec_Paso_A_Paso]]
+=== montar imagen
+/via: [[https://unix.stackexchange.com/a/316407]]
+otra /via: [[https://major.io/2010/12/14/mounting-a-raw-partition-file-made-with-dd-or-dd_rescue-in-linux/]]
+
+  * para montar:<code bash>sudo losetup -P /dev/loop0 imagen.img
+ls /dev/loop0p* # para que muestre las particiones de la imagen
+mount /dev/loop0p1 /mnt/
+</code>
+    * alternativa comando para mostrar las particiones de la imagen?:<code bash>losetup --partscan --find --show <disk.img>
+mount /dev/loop0p1 /mnt</code>
+    * /via: [[https://superuser.com/questions/117136/how-can-i-mount-a-partition-from-dd-created-image-of-a-block-device-e-g-hdd-u]]
+
+  * para desmontar:<code bash>umount /mnt/
+losetup -d /dev/loop0</code>
+
+== otros
+  * [[linux:filesystem:permisos|]]
+  * sistema de archivos en RAM: [[https://puerto53.com/linux/que-es-el-filesystem-dev-shm-shared-memory-de-los-sistemas-linux/|/dev/shm]]
+<code bash>
+grep shm /etc/fstab # tmpfs /dev/shm tmpfs defaults,size=16g 0 0
+mount -o remout /dev/shm
+df -hP |grep shm # tmpfs 16G 2.7G 14G 17% /dev/shm
+mount -o remount,rw /dev/shm
+</code>

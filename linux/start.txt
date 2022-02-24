@@ -1,0 +1,21 @@
+====== linux ======
+
+  * [[linux:shell:start]]
+  * [[linux:desktop:start]]
+  * [[linux:filesystem:start]]
+  * [[linux:comm:start]]
+  * [[linux:utils:start]]
+  * [[linux:install:start]]
+  * [[linux:seguridad:start]]
+
+
+===== URLs de interés =====
+
+  * tutoriales varios: [[http://www.sromero.org/wiki/linux/indice]]
+  * comandos bash: [[https://www.luisllamas.es/listado-comandos-linux-utiles/]]
+
+===== cursos/formación =====
+
+  * [[linux:LPIC-1 (PUE):start]]
+  * [[linux:LPIC-2 (PUE):start]]
+  

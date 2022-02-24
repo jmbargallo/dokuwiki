@@ -1,0 +1,62 @@
+= Optimizar Windows 10
+== configuración
+  * Seguridad -> aplicaciones en segundo plano
+  * Actualización -> Windows Update -> Opciones avanzadas -> Optimización de entrega = compartir actualizaciones P2P
+  * Privacidad -> General = desactivar todo
+    * Ubicación
+    * Cámara
+    * Micrófono
+    * Voz, entrada manuscrita y escritura
+    * Aplicaciones en segundo plano (?)
+  * Red e Internet -> WiFi settings -> WiFi Sense = posible compartición contraseñas con amigos
+  * Personalizacíon -> Pantalla de Bloqueo -> quitar Spotlight (anuncios!), desactivar la copión de "obtener datos divertidos, consejos, ..."
+
+/vía: [[https://planetared.com/2017/09/funciones-desactivar-en-windows-10/]]
+
+== servicios
+  * ''Cola de impresión'' : si no tenemos impresoras
+  * ''Administrador de mapas descargados'' : usado por la aplicación de maps
+  * '' Adquisición de imágenes de Windows (WIA)'' : adquisción de imágenes desde escáneres y cámaras
+  * ''Aplicación auxiliar de NetBios sobre TPC/IP'' : sin sentido si no estás en una red de trabajo (compartir archivos, imprimir en red, iniciar sesión en red)
+  * ''Aplicación auxiliar IP'' : tecnologías de transición relacionadas con redes IPv6
+  * ''Cliente de sguimiento de vínculos distribuidos'' : movimiento de archivos con ID único en NTFS (local o red)
+  * ''Registro Remoto''
+  * ''dmwappushsvc'' : enrutamiento de mensajes de inserción WAP (telemetría y recolección de datos por parte de Microsoft)
+  * ''superfetch'' : optimización de carga de programas. Controvertida su deshabilitación.
+  * ''Servicio asistente para la compatibilidad de programas'' : supervisa instalación de programas y detecta problemas de compatibilidad
+  * ''Servicio de Antivirus Windows Defender'' : se puede deshabilitar si hay antivirus adicional
+  * ''ASP.NET state service'' : solo activo si el ordenador funciona como servidor que procesa requerimientos ASP. También usado por Norton Ghost
+  * ''Servicio de Geolocalización''
+  * ''Servicio de Inspección de red de antivirus de Windows Defender'' : protección frente a ataques en red. Se puede deshabilitar si hay antivirus adicional
+  * ''Servicio de Panel de escritura a mano y teclado táctil'' : sin sentido si no se usa teclado táctil o tableta gráfica
+  * ''Servicio enumerador de dispositivos portátiles'' : lectores tarjetas inteligentes, en la práctica, algunos dispositivos tipo ZUNE
+  * ''servicio de informe de errores de windows'' : permite informar de errores cuando los programas dejan de funcionar
+  * ''Telemetría y experiencias de usuario conectado (ex-servicio de seguimiento de diadnósticos)'' : telemetría y recolección de datos.
+  * ''Windows Search'' : proporciona indexación de contenido, búsqueda de archivos, en correo electrónico...
+  * ''Windows Update'' : actualizaciones de Windows
+
+/vía: [[http://www.zeppelinux.es/mejorar-el-rendimiento-de-windows-10/]] (más consejos, aparte de los servicios)
+
+== modo GOD
+  * crear carpeta, empezando con un texto cualquiera ("God Mode") y acabando con la cadena: "{ED7BA470-8E54-465E-825C-99712043E01C}"
+
+== deshabilitar telemetría
+  * REGEDIT -> ''HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DataCollection'' : AllowTelemetry (DWORD 32 bits) = 0
+== inicio automático de programas
+  * Administrador de Tareas -> Inicio
+
+== cortana
+  * REGEDIT -> ''HKEYLOCALMACHINE\Software\Policies\Microsoft\Windows\Windows Search\AllowCortana'' : REG_DWORD 32 bits = 0
+    * [[https://www.xataka.com/basics/como-desactivar-cortana-en-windows-10]]
+    * -> ''HKEYLOCALMACHINE\Software\Policies\Microsoft\Windows\WcmSvc\WindowsSearch\AllowCortana'' : REG_DWORD 32 bits = 0 <label type="warning">SENSE PROVAR</label>
+      * [[https://www.adslzone.net/esenciales/windows-10/desactivar-cortana/]]
+  * powershell -> ''Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage'' <label type="warning">SENSE PROVAR</label>
+=== temporal 
+  * configuración -> cortana
+    * deshabilitar todo
+    * Administrar la información a la que Cortana puede tener acceso desde este dispositivo
+  * administrador tareas (CTRL+SHIFT+ESC)
+    * Cortana -> deshabilitar
+
+== desinstalar nativas
+<code powershell; powershell>Get-AppxPackage "nombre de la app" | Remove-AppxPackage</code>

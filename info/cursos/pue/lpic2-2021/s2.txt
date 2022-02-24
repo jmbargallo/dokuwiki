@@ -1,0 +1,98 @@
+= LPIC2 2021 Sesión 2 (2021-02-04)
+== Documentación relacionada
+    * Presentaciones/2020/201/200-Capacity Planning.pdf
+    * Material Practicas LPIC-2/LPIC-201/1-Capacity Planning/1-Resumen Análisis de Rendimiento en Linux.pdf
+    * Material Practicas LPIC-2/LPIC-201/1-Capacity Planning/2-Recopilación de información de hardware.pdf
+    * Material Practicas LPIC-2/LPIC-201/1-Capacity Planning/3 - Cómo utilizar lsof.pdf
+
+== Clase
+=== procesos
+  * ''echo $$'': PID shell actual
+  * ''echo $?'': código salida última ejecución, 0 correcto
+  * ''echo $!'': PID último proceso ejecutado
+
+  * valgrind: suite herramientas para problemas de memoria
+  * yumbo frame
+    * MTU: 1500 bytes
+    * con las yumbo frames puedes subir a 9000 bytes
+    * unidades remotas TPC/IP
+    * hay que hacerlo tanto en mi Linux con el switch
+
+=== recopilación hard
+  * ''yum install pciutils''
+    * ''lspci -s <device> -v [-k]''
+  * **/etc/yum.repos.d/CentOS-Base.repo** <- cambiar el fichero, repos obsoletos
+    * ''yum clean all''
+    * ''yum update -y''
+=== /proc
+pseudo-sistema de archivos 
+  * /proc/partitions
+  * /proc/meminfo
+  * /proc/mounts -> /proc/self/mounts
+  * /proc/sys/kernel
+  * /proc/sys/net
+    * ''echo "1" > /proc/sys/net/ipv4/icmp_echo_ignore_all'': en caliente y sin persistencia
+      * para persistencia ''sysctl -p''
+    * ''echo "1" > /proc/sys/net/ipv4/ip_forward'': reenvio paquetes
+  * /proc/1 
+    * proceso 1 init o systemd
+=== /sys
+pseudo sistea de archivos **sysfs** con el fin de exportar desde el espacio del kernel (Anillo 0) al espacio del usuario (Anillo 3) información sobre los dispositivos y sus controladores. -> [[linux:fsh:sys|]]
+  * systool
+  * **/proc/sys/vm/swappiness**: bajar el valor a 10, para que no no haga tanto swap
+    * troubleshooting (solución de problemas)
+=== Laboratorio 2
+<callout type="info" icon="true">2-Recopilación de información de hardware.pdf, pag 50-54</callout>
+  * ''lscpu''
+  * ''lspci''
+    * **-t** : tree
+    * **-k** : módulos usados por los dispositivos
+  * **dmesg**: grabar mensajes del kernel especificamente relacionados con detección y configuración de hard
+    * **/var/log/dmesg**
+    * **-T**: marca de tiempo
+=== LOGS
+  * syslog: **var/log**
+  * journal (systemd) ''journalctl''
+    * debian: persistido
+    * redhat: sin persistencia
+    * centos: persistido
+  * **/var/log/messages**
+  * ''cat /proc/sys/kernel/printk'': aumenta verbosidad en los logs
+=== HARD
+    * ''lshw''
+
+=== lsof
+list open files\\
+Se puede utilizar para revisar que procesos están haciendo uso de directorios, archivos ordinarios, tuberías (pipes), zócalos de red (sockets) y dispositivos. Uno de los principales usos de determinar que procesos están haciendo uso de archivos en una partición cuando esta no se puede desmontar.
+
+
+  * ''lsof <opciones> <dispositivo|punto montaje|directorio>''
+    * **-a**: con varias opciones, fuerza el uso del AND lógico en lugar del OR (por defecto)
+    * **^**: negación o exclusión, precede a otros criterio de selección
+    * **-p <PID>** archivos relacionados a un proceso
+      * ''fuser -km /mnt/DATA'': elimina procesos de usuario del punto de montaje
+    * **-i**: archivos de red utilizados por procesos de red
+      * ''lsof -i | grep httpd'': 
+      * ''lsof -i TCP:80''
+      * ''fuser -n TCP:80''
+    * **+L <n>**: número de enlaces de un archivo abierto, menores a <n>
+      * localizar fugas a disco
+      * archivo con 0 enlaces, está borrado.
+      * ''lsof +L1'': archivos abiertos-pero-borrados del sistema
+      * ''lsof +aL1'': archivos borrados-pero-abiertos
+    * **-e <path>**: excluye ese path.
+      * lsof by default checks all mounted file systems including FUSE - file systems implemented in user space which have special access rights in Linux. [[https://unix.stackexchange.com/questions/171519/lsof-warning-cant-stat-fuse-gvfsd-fuse-file-system]]
+    * **+D <path>**: archivos abiertos en la ruta especificada recursivamente
+    * **-u <user>[,<user]**
+    * **-t**: salida lacónica, PIDs sin cabeceras (útil para scripts)
+    * **-n**: dehabilita resolución de nombres de red
+    * **-N**: lista archivos NSF
+    * **-c <proceso o programa>**: filtra los archivos abiertos por el proceso o programa especificados.
+    * **-r <segundos>**: modo bucle con la cadencia especificada
+
+== tips & tricks
+  * sudo + vi -> :shell como root <- malas configuraciones de sudo
+    * configurar en **visudo** delante de los comandos **NOEXEC:**
+    * sudoreplay: visudo -> Defaults log_output
+=== nmon + ksar
+  * monit linux: herramienta monitorización local [[https://mmonit.com/monit/]]

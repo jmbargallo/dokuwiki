@@ -1,0 +1,294 @@
+====== Instalar Wordpress Ubuntu 18.04 ======
+
+
+===== Paso 1: Crear una base de datos y un usuario de MySQL para WordPress =====
+
+
+El primer paso que daremos es preparatorio. WordPress utiliza MySQL para administrar y almacenar información sobre el sitio y el usuario. Ya instalamos MySQL, pero debemos crear una base de datos y un usuario para que WordPress los utilice.
+
+Iniciar sesión en la cuenta root (administrativa) de MySQL con este comando:
+<code:bash>
+    mysql -u root -p
+</code>
+ 
+
+Una vez instalado el software, se le solicitará la contraseña que estableció para la cuenta root de MySQL.
+
+Primero, podemos crear una base de datos separada que WordPress controlará. Puede darle el nombre que desee, pero en esta guía usaremos wordpress por cuestiones de simplicidad. Cree la base de datos para WordPress escribiendo lo siguiente:
+<code:SQL>
+    CREATE DATABASE wordpress DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+</code>
+ 
+
+Nota: Cada instrucción de MySQL debe terminar en punto y coma (;). Asegúrese de que esto no falte si experimenta problemas.
+
+A continuación, crearemos una cuenta de usuario separada de MySQL que usaremos exclusivamente para realizar operaciones en nuestra nueva base de datos. Desde el punto de vista de la administración y la seguridad, crear bases de datos y cuentas de una función es una idea recomendable. En esta guía, usaremos el nombre wordpressuser. Puede cambiarlo si lo desea.
+
+Crearemos esta cuenta, estableceremos una contraseña y concederemos acceso a la base de datos que creamos. Podemos hacerlo escribiendo el comando que se muestra a continuación. Recuerde elegir una contraseña segura para el usuario de su base de datos:
+<code:SQL>
+    GRANT ALL ON wordpress.* TO 'wordpressuser'@'localhost' IDENTIFIED BY 'password';
+</code>
+ 
+
+Ahora tiene una base de datos y una cuenta de usuario, creadas específicamente para WordPress. Debemos eliminar los privilegios de modo que la instancia actual de MySQL registre los cambios recientes que realizamos:
+<code:SQL>
+    FLUSH PRIVILEGES;
+</code>
+ 
+
+Cierre MySQL escribiendo lo siguiente:
+<code:SQL>
+    EXIT;
+</code>
+ 
+==== Paso 2: Instalar extensiones de PHP adicionales ====
+
+
+Cuando configuramos nuestra pila LAMP, solo necesitamos un conjunto de extensiones muy reducido para que PHP se comunicara con MySQL. WordPress y muchos de sus complementos aprovechan las extensiones de PHP adicionales.
+
+Podemos descargar e instalar algunas de las extensiones de PHP más populares para usarlas con WordPress escribiendo lo siguiente:
+
+    sudo apt update
+    sudo apt install php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl php-zip
+</code>
+ 
+
+Nota: Cada complemento de WordPress tiene su propio conjunto de requisitos. Para algunos, posiblemente sea necesario instalar paquetes de PHP adicionales. Compruebe la documentación de sus complementos para ver sus requisitos de PHP. Si están disponibles, pueden instalarse con apt como ya se ha mostrado.
+
+Reiniciaremos Apache para cargar estas nuevas extensiones en la sección siguiente. Si vuelve aquí para instalar complementos adicionales, podrá reiniciar Apache escribiendo lo siguiente:
+<code:bash>
+    sudo systemctl restart apache2
+</code>
+ 
+=== Paso 3: Ajustar la configuración de Apache para permitir anulaciones y reescrituras de .htaccess ===
+
+
+A continuación, realizaremos algunos ajustes de menor importancia en nuestra configuración de Apache. Conforme a los tutoriales de los requisitos previos, debe tener un archivo de configuración para su sitio en el directorio /etc/apache2/sites-available/. Como ejemplo, utilizare mos /etc/apache2/sites-available/wordpress.conf, pero debe sustituir la ruta a su archivo de configuración cuando proceda.
+
+Además, emplearemos /var/www/wordpress como el directorio root de nuestra instalación de WordPress. Debería usar el root web especificado en su propia configuración.
+
+Nota: Es posible que utilice la configuración predeterminada 000-default.conf (con /var/www/html como su root web). Se puede usar si solo piensa alojar un sitio web en este servidor. Si no piensa hacerlo, resulta mejor dividir la configuración necesaria en fragmentos lógicos, de un archivo por sitio.
+Habilitar anulaciones .htaccess
+
+Actualmente, el uso de archivos .htaccess está desactivado. WordPress y muchos de sus complementos utilizan estos archivos de forma exhaustiva para realizar ajustes de comportamiento del servidor web dentro del directorio.
+
+Abra el archivo de configuración de Apache para su sitio web:
+<code:bash>
+    sudo nano /etc/apache2/sites-available/wordpress.conf
+</code>
+ 
+
+Para permitir archivos .htaccess, debemos configurar la directiva AllowOverride dentro de un bloque Directory orientado a nuestro root de documentos. Agregue el siguiente bloque de texto dentro del bloque VirtualHost en su archivo de configuración. Asegúrese de utilizar el directorio root web correcto:
+/etc/apache2/sites-available/wordpress.conf
+
+<code>
+<Directory /var/www/wordpress/>
+    AllowOverride All
+</Directory>
+</code>
+ 
+
+Cuando termine, guarde y cierre el archivo.
+Habilitar el módulo de reescritura
+
+A continuación, podemos habilitar mod_rewrite para usar la característica de permalink de WordPress:
+<code>
+    sudo a2enmod rewrite
+</code>
+ 
+Habilitar los cambios
+
+Antes de implementar los cambios que realizamos, compruebe que no se hayan cometido errores de sintaxis:
+<code>
+    sudo apache2ctl configtest
+</code>
+ 
+
+El mensaje del resultado podría ser como el siguiente:
+<code>
+Output
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 127.0.1.1. Set the 'ServerName' directive globally to suppress this message
+Syntax OK
+</code>
+
+Reinicie Apache para que se apliquen los cambios:
+<code>
+    sudo systemctl restart apache2
+</code>
+ 
+
+A continuación, descargaremos y configuraremos el propio WordPress.
+
+== Paso 4: Descargar WordPress ==
+
+
+Ahora que el software de nuestro servidor está configurado, podemos descargar y configurar WordPress. Preferentemente por motivos de seguridad, siempre se recomienda obtener la versión más reciente de WordPress del sitio del producto.
+
+Posiciónese en un directorio editable y luego descargue la versión comprimida escribiendo lo siguiente:
+<code>
+    cd /tmp
+    curl -O https://wordpress.org/latest.tar.gz
+</code>
+ 
+
+Extraiga el archivo comprimido para crear la estructura de directorios de WordPress:
+<code>
+    tar xzvf latest.tar.gz
+</code>
+ 
+
+Moveremos estos archivos a nuestro root de documentos por ahora. Antes de hacerlo, podemos agregar un archivo ficticio .htaccess para que WordPress pueda usarlo más adelante.
+
+Cree el archivo escribiendo lo siguiente:
+<code>
+    touch /tmp/wordpress/.htaccess
+</code>
+ 
+
+También copiaremos el archivo de configuración de muestra al nombre de archivo que WordPress lee realmente:
+<code>
+    cp /tmp/wordpress/wp-config-sample.php /tmp/wordpress/wp-config.php
+</code>
+ 
+
+También podemos crear el directorio upgrade, de modo que WordPress no experimente problemas relacionados con permisos al intentar hacerlo por su cuenta después de una actualización de su software:
+<code>
+    mkdir /tmp/wordpress/wp-content/upgrade
+</code>
+ 
+
+Ahora podemos copiar todo el contenido del directorio en nuestro root de documentos. Utilizaremos un punto al final de nuestro directorio de origen para indicar que todo lo que está dentro del directorio debe copiarse, incluidos los archivos ocultos (como el archivo .htaccess que creamos):
+<code>
+    sudo cp -a /tmp/wordpress/. /var/www/wordpress
+</code>
+ 
+== Paso 5: Configurar el directorio de WordPress ==
+
+
+Antes de realizar la configuración de WordPress basada en la Web, debemos ajustar algunos elementos en nuestro directorio de WordPress.
+Realizar ajustes de propiedad y permisos
+
+Una de las cosas más importantes que debemos hacer es configurar los permisos y la propiedad de archivos de forma razonable.
+
+Empezaremos por dar la propiedad de todos los archivos al usuario y al grupo www-data. Este es el usuario cuyo funcionamiento el servidor web de Apache simula y este último deberá poder leer y escribir archivos de WordPress para representar el sitio web y realizar actualizaciones automáticas.
+
+Actualice la propiedad con chown:
+<code>
+    sudo chown -R www-data:www-data /var/www/wordpress
+</code>
+ 
+
+A continuación, ejecutaremos dos comandos find para configurar los permisos correctos en los directorios y archivos de WordPress:
+<code>
+    sudo find /var/www/wordpress/ -type d -exec chmod 750 {} \;
+    sudo find /var/www/wordpress/ -type f -exec chmod 640 {} \;
+</code>
+ 
+
+Deberían ser un conjunto de permisos razonables para empezar. Algunos complementos y procedimientos pueden requerir ajustes adicionales.
+Configurar el archivo de configuración de WordPress
+
+Ahora, debemos realizar algunos cambios en el archivo de configuración principal de WordPress.
+
+Cuando abramos el archivo, nuestra primera tarea será ajustar algunas claves secretas para proporcionar seguridad a nuestra instalación. WordPress proporciona un generador seguro para estos valores, de modo que no tenga que crear valores buenos por su cuenta. Solo se utilizan de forma interna, de modo que tener valores complejos y seguros aquí no afectará de manera negativa la utilidad.
+
+Para obtener valores seguros del generador de claves secretas de WordPress, escriba lo siguiente:
+<code>
+    curl -s https://api.wordpress.org/secret-key/1.1/salt/
+</code>
+ 
+
+Obtendrá valores únicos como estos:
+
+<code>
+
+Output
+define('AUTH_KEY',         '1jl/vqfs<XhdXoAPz9 DO NOT COPY THESE VALUES c_j{iwqD^<+c9.k<J@4H');
+define('SECURE_AUTH_KEY',  'E2N-h2]Dcvp+aS/p7X DO NOT COPY THESE VALUES {Ka(f;rv?Pxf})CgLi-3');
+define('LOGGED_IN_KEY',    'W(50,{W^,OPB%PB<JF DO NOT COPY THESE VALUES 2;y&,2m%3]R6DUth[;88');
+define('NONCE_KEY',        'll,4UC)7ua+8<!4VM+ DO NOT COPY THESE VALUES #`DXF+[$atzM7 o^-C7g');
+define('AUTH_SALT',        'koMrurzOA+|L_lG}kf DO NOT COPY THESE VALUES  07VC*Lj*lD&?3w!BT#-');
+define('SECURE_AUTH_SALT', 'p32*p,]z%LZ+pAu:VY DO NOT COPY THESE VALUES C-?y+K0DK_+F|0h{!_xY');
+define('LOGGED_IN_SALT',   'i^/G2W7!-1H2OQ+t$3 DO NOT COPY THESE VALUES t6**bRVFSD[Hi])-qS`|');
+define('NONCE_SALT',       'Q6]U:K?j4L%Z]}h^q7 DO NOT COPY THESE VALUES 1% ^qUswWgn+6&xqHN&%');
+
+</code>
+
+Son líneas de configuración que podemos pegar directamente en nuestro archivo de configuración para establecer claves seguras. Copie el resultado que obtuvo ahora.
+
+A continuación, abra el archivo de configuración de WordPress:
+<code>
+    sudo nano /var/www/wordpress/wp-config.php
+</code>
+ 
+
+Busque la sección que contiene los valores ficticios para esos ajustes. Se parecerá a esto:
+/var/www/wordpress/wp-config.php
+
+<code>
+. . .
+
+define('AUTH_KEY',         'put your unique phrase here');
+define('SECURE_AUTH_KEY',  'put your unique phrase here');
+define('LOGGED_IN_KEY',    'put your unique phrase here');
+define('NONCE_KEY',        'put your unique phrase here');
+define('AUTH_SALT',        'put your unique phrase here');
+define('SECURE_AUTH_SALT', 'put your unique phrase here');
+define('LOGGED_IN_SALT',   'put your unique phrase here');
+define('NONCE_SALT',       'put your unique phrase here');
+
+. . .
+</code>
+ 
+
+Elimine esas líneas y pegue los valores que copió de la línea de comandos:
+/var/www/wordpress/wp-config.php
+<code>
+. . .
+
+define('AUTH_KEY',         'VALUES COPIED FROM THE COMMAND LINE');
+define('SECURE_AUTH_KEY',  'VALUES COPIED FROM THE COMMAND LINE');
+define('LOGGED_IN_KEY',    'VALUES COPIED FROM THE COMMAND LINE');
+define('NONCE_KEY',        'VALUES COPIED FROM THE COMMAND LINE');
+define('AUTH_SALT',        'VALUES COPIED FROM THE COMMAND LINE');
+define('SECURE_AUTH_SALT', 'VALUES COPIED FROM THE COMMAND LINE');
+define('LOGGED_IN_SALT',   'VALUES COPIED FROM THE COMMAND LINE');
+define('NONCE_SALT',       'VALUES COPIED FROM THE COMMAND LINE');
+
+. . .
+
+</code> 
+
+A continuación, debemos modificar algunos de los ajustes de conexión de la base de datos al inicio del archivo. Debe ajustar el nombre de la base de datos, su usuario y la contraseña asociada que configuramos dentro de MySQL.
+
+El otro cambio que debemos realizar es configurar el método que debe emplear WordPress para escribir el sistema de archivos. Debido a que hemos dado permiso al servidor web para escribir donde debe hacerlo, podemos fijar de forma explícita el método del sistema de archivos en “direct”. Si no lo configuramos con nuestros ajustes actuales, haría que WordPress solicitase las credenciales de FTP cuando realicemos algunas acciones.
+
+Este ajuste se puede agregar debajo de los ajustes de conexión de la base de datos o en cualquier otra parte del archivo:
+/var/www/wordpress/wp-config.php
+<code>
+. . .
+
+define('DB_NAME', 'wordpress');
+
+/** MySQL database username */
+define('DB_USER', 'wordpressuser');
+
+/** MySQL database password */
+define('DB_PASSWORD', 'password');
+
+. . .
+
+define('FS_METHOD', 'direct');
+
+</code> 
+
+Guarde y cierre el archivo cuando termine.
+
+== Paso 6: Completar la instalación a través de la interfaz web ==
+
+Ahora que la configuración del servidor está completa, podemos finalizar la instalación a través de la interfaz web.
+
+En su navegador web, diríjase al nombre de dominio o a la dirección IP pública de su servidor:
+<code>
+https://server_domain_or_IP
+</code>

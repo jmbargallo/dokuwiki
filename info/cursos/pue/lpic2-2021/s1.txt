@@ -1,0 +1,130 @@
+LPIC2 2021 Sesión 1 (2021-02-02)
+Documentación relacionada
+
+    Presentaciones/2020/201/200-Capacity Planning.pdf
+    Material Practicas LPIC-2/LPIC-201/1-Capacity Planning/1-Resumen Análisis de Rendimiento en Linux.pdf
+
+Clase
+
+    determinar necesidades ¿qué es un problema en mi entorno?
+    herramientas para determinar valores de rendimiento
+
+SWAP
+
+    no obligatorio, recomendable
+    k8s no
+
+iostat
+
+monitorear la carga de entrada/salida de un disposito/CPU
+
+    yum install bash-completion -y
+    yum provides iostat
+    yum install sysstat -y
+    rpm –ql sysstat
+
+    iostat <opciones> <intervalo> <repeticiones>
+        -c: CPU
+        -m: E/S
+        -d: dispositivo
+        -p: dispositivos de bloque
+        -x -m /dev/sdXX: estadísticas de un dispostivo, varios separados por comas
+        -k, -m: kilobytes, megabytes
+        -h: NFS
+
+vmstat
+
+estadísiticas de memoria virtual sobre procesos, memoria, paginación, bloques I/O
+
+    bajo id, alto consumo CPU
+    procs/r : procesos encolados, no se estan procesando
+    procs/b: esperando recursos
+    swap/si, swap/so (in/out): valores diferentes de 0, problemas
+    vmstat <opciones> <intervalo> <repeticiones>
+        -s: estadísticas de memoria
+        -S: unidad de medida (M para megabytes)
+        -D: discos
+        -t: timestamp
+    OJO hypervisores (virtualización): el rendimiento es diferente a una física y entre ellos.
+
+netstat
+
+conexiones activas
+
+    IPv6 desactivar si no se usa (puede exponer servicios)
+    netstat comando deprecado → ss
+        -putan: muestra puerto y quien lo ha abierto (LISTEN + UDP)
+
+ps
+
+lista procesos en ejecución
+
+    nice, renice → nice_renice
+    systemd-cgls ← pstree
+    systemd-cgtop
+    lsof: ficheros abiertos y procesos relacionados
+        yum provides lsof → yum install lsof -y
+        lsof /root (o punto de montaje)
+    free
+    top
+        -d <segundos>
+        campo RES: memoria consumida
+        hotkeys:
+            h: help
+            u: filtrar por usuario
+    uptime
+
+sar
+
+recoge informes o guarda información de la actividad del sistema
+
+    sar
+        -u: CPU
+        -d: estadísitcas discos
+        -b: tasas de transferencia I/O
+        -n DEV: estadísiticas network por dispositivo
+        -n EDEV: idem con errores
+        -q: carga del sistema
+        -B -d -p: monitorización discos
+        -A: todas las estadísticas
+
+Ciertos comandos (en Ubuntu) dan un error:
+Cannot open /var/log/sysstat/sa13: No such file or directory
+Please check if data collecting is enabled
+/etc/default/sysstat → enabled=true
+collectd
+
+collectd es un demonio que recoge las estadísticas de rendimiento del sistema periódicamente y proporciona mecanismos para almacenar los valores de diferentes formas.
+
+    Está escrito en C para el rendimiento y la portabilidad, que permite que se ejecute en sistemas sin lenguaje de script o demonio cron, como sistemas embebidos.
+    Incluye optimizaciones y características para manejar cientos de miles de conjuntos de datos.
+    Viene con más de 90 plugins, que van desde casos estándar a temas muy especializados y avanzados.
+    Proporciona características de red de gran alcance y es extensible de muchas maneras.
+    collectd-web
+    práctica: Material Practicas LPIC-2/LPIC-201/1-Capacity Planning/collectd/Laboratorio Installing Collectd and Collectd-Web.pdf
+
+prácticas/ejercicios:
+
+    estadísticas con sar para ver la red y los errores de la red:
+        sar -n EDEV
+    estadísticas con sar para discos con el nombre de los dispositivos, memoria y swap libre y cpu:
+        sar -B -d -p
+        sar (cpu)
+        sar -r
+        sar -d -p -r 1 5
+    Con el comando vmstat quiero monitorizacion cada 1 segundo 3 estadistica y marca de tiempo:
+        vmstat -t 1 3
+    Con el netstat ver los puertos que estan listando:
+        netstat -putan | grep -i LISTEN
+
+curiosidades
+
+    ps -ef | more
+        en centos, proceso 1 es systemd
+        en debian, sale init (es falso, se comprueba con cat /proc/1/stat)
+    loadavg: carga sistema script PHP
+        Material Practicas LPIC-2/LPIC-201/1-Capacity Planning/6-Load AVG monitorizar la carga del sistema.pdf
+        http://www.loadavg.com/
+
+TODO
+Material Practicas LPIC-2/LPIC-201/1-Capacity Planning/Comandos Monitorizacion-Servidores-Linux.pdf

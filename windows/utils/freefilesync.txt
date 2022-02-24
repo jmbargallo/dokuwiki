@@ -1,0 +1,26 @@
+====== Free File Sync ======
+
+==== general====
+  * [[https://www.freefilesync.org/]]
+  * disponible Windows, MAC, Linux
+  * alternativa Linux: backintime?
+
+==== funcionamiento====
+dos componentes para realizar dos tareas:
+  * Free File Sync: se encarga de comparar directorios y hacer la sincro correspondiente
+  * Real Time Sync: "demonio" que mira los directorios indicados (a escoger) cada X periodo de tiempo (definible) y ejecuta la tarea de Free File Sync asignada
+
+==== ficheros auxiliares====
+  * Free File Sync:
+    * ''.ffs_gui'' : archivo que guarda la selección de directorios y configuración (para su uso posterior)
+    * ''.ffs_batch'' : archivo que parte de una selección/configuración o de un **.ffs_gui** para generar un archivo que entenderá **Real Time Sync**
+  * Real Time Sync
+    * ''.ffs_real'' : archivo con la selección (archivo .ffs_batch) y configuración
+    * se ha de programar su autoejecución:
+      * vía carpeta Inicio (''shell:startup'')
+      * vía programador de tareas (asignar usuario SYSTEM para ejecución sin login alguno de usuario)
+
+==== enlaces de interés:====
+  * Manual : [[https://www.freefilesync.org/manual.php]] 
+  * Real Time Sync : [[https://www.freefilesync.org/manual.php?topic=realtimesync]]
+  * uso de etiquetas en lugar de letras de unidad : [[https://www.freefilesync.org/manual/html/variable-drive-letters.html]]

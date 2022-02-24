@@ -1,0 +1,109 @@
+====== Paso 1: Instalación de phpMyAdmin ======
+
+Para comenzar, instalaremos phpMyAdmin desde los repositorios predeterminados de Ubuntu.
+
+Esto se realiza actualizando el índice de paquete de su servidor y, luego, utilizando el sistema de empaquetado apt para descargar los archivos e instalarlos en su sistema:
+<code:bash>
+    sudo apt update
+    sudo apt install phpmyadmin php-mbstring php-gettext
+</code>
+
+El proceso de instalación añade el archivo de configuración de phpMyAdmin de Apache al directorio /etc/apache2/conhable/, donde se lee de forma automática. Lo único que debe hacer es habilitar de forma explícita la extensión PHP mbstring. Puede hacerlo escribiendo lo siguiente:
+<code:bash>
+    sudo phpenmod mbstring
+</code>
+ 
+===== Configuración del acceso con contraseña para la cuenta root de MySQL =====
+
+En los sistemas Ubuntu con MySQL 5.7 (y versiones posteriores), el usuario root de MySQL se configura para la autenticación usando el complemento auth_socket de manera predeterminada en lugar de una contraseña. En muchos casos, esto proporciona mayor seguridad y usabilidad, pero también puede causar complicaciones cuando es necesario permitir que un programa externo (como phpMyAdmin) acceda al usuario.
+
+Si aún no lo ha hecho, deberá cambiar el método de autenticación de auth_socket a mysql_native_password para iniciar sesión en phpMyAdmin como usuario root de MySQL. Para hacer esto, abra la consola de MySQL desde su terminal:
+<code:bash>
+    sudo mysql
+</code>
+ 
+
+A continuación, compruebe con el siguiente comando el método de autenticación utilizado por una de sus cuentas de usuario de MySQL:
+<code:SQL>
+    SELECT user,authentication_string,plugin,host FROM mysql.user;
+
+ 
+
+Output
++------------------+-------------------------------------------+-----------------------+-----------+
+| user             | authentication_string                     | plugin                | host      |
++------------------+-------------------------------------------+-----------------------+-----------+
+| root             |                                           | auth_socket           | localhost |
+| mysql.session    | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+| mysql.sys        | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+| debian-sys-maint | *8486437DE5F65ADC4A4B001CA591363B64746D4C | mysql_native_password | localhost |
+| phpmyadmin       | *5FD2B7524254B7F81B32873B1EA6D681503A5CA9 | mysql_native_password | localhost |
++------------------+-------------------------------------------+-----------------------+-----------+
+5 rows in set (0.00 sec)
+</code>
+En este ejemplo, puede ver que, en efecto, el usuario root se autentica utilizando el complemento de auth_socket. Para configurar la cuenta de root de modo que la autenticación se realice con una contraseña, ejecute el siguiente comando ALTER USER. Asegúrese de cambiar password por una contraseña segura que elija:
+<code:SQL>
+    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+</code>
+ 
+
+A continuación, ejecute FLUSH PRIVILEGES para indicar al servidor que vuelva a cargar la tabla de permisos y aplique sus nuevos cambios:
+<code:SQL>
+    FLUSH PRIVILEGES;
+</code>
+ 
+
+Compruebe de nuevo los métodos de autenticación empleados por cada uno de sus usuarios para confirmar que *root *deje de realizarla usando el complemento de auth_socket:
+<code:SQL>
+    SELECT user,authentication_string,plugin,host FROM mysql.user;
+
+ 
+
+Output
++------------------+-------------------------------------------+-----------------------+-----------+
+| user             | authentication_string                     | plugin                | host      |
++------------------+-------------------------------------------+-----------------------+-----------+
+| root             | *DE06E242B88EFB1FE4B5083587C260BACB2A6158 | mysql_native_password | localhost |
+| mysql.session    | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+| mysql.sys        | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+| debian-sys-maint | *8486437DE5F65ADC4A4B001CA591363B64746D4C | mysql_native_password | localhost |
+| phpmyadmin       | *5FD2B7524254B7F81B32873B1EA6D681503A5CA9 | mysql_native_password | localhost |
++------------------+-------------------------------------------+-----------------------+-----------+
+5 rows in set (0.00 sec)
+</code>
+Aquí podrá ver que el usuario root se auntenticará usando una contraseña. Ahora podrá iniciar sesión en la interfaz phpMyAdmin como usuario root con la contraseña que estableció aquí.
+Configuración del acceso con contraseña para un usuario dedicado de MySQL
+
+Por otra parte, para el flujo de trabajo de algunos puede resultar más conveniente la conexión a phpMyAdmin con un usuario dedicado. Para hacer esto, abra una vez más el shell de MySQL:
+<code:bash>
+    sudo mysql
+</code>
+ 
+
+Nota: Si tiene habilitada la autenticación por contraseña, como se describe en la sección anterior, deberá utilizar un comando diferente para acceder al intérprete de comandos de MySQL. A través de lo siguiente, se ejecutará su cliente de MySQL con privilegios de usuario regulares y solo obtendrá privilegios de administrador dentro de la base de datos mediante la autenticación:
+<code:bash>
+    mysql -u root -p
+</code>
+ 
+
+A partir de ahí, cree un usuario nuevo y asigne una contraseña segura:
+<code:SQL>
+    CREATE USER 'sammy'@'localhost' IDENTIFIED BY 'password';
+</code>
+ 
+
+Luego, conceda a su nuevo usuario los privilegios apropiados. Por ejemplo, con el siguiente comando podría conceder privilegios de usuario a todas las tablas dentro de la base de datos, así como la facultad de añadir, cambiar y eliminar privilegios de usuario:
+<code:SQL>
+    GRANT ALL PRIVILEGES ON *.* TO 'sammy'@'localhost' WITH GRANT OPTION;
+</code>
+ 
+
+A continuación, cierre el shell de MySQL:
+<code:SQL>
+    exit
+</code>
+
+A continuación, reinicie Apache para que sus cambios surtan efecto:
+<code:bash>
+    sudo systemctl restart apache2
+</code>

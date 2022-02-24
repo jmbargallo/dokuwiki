@@ -1,0 +1,41 @@
+= 103.1 - línea de comando
+  * bash (sh, tsch, csh, ksh, zsh)
+  * comandos internos VS comandos externos
+    * ''cd'', ''pwd'', ''echo'', ''time'', ''set'', ''exit''
+    * ''type [-a] <comando>''
+    * compleción de comandos: <tab><tab>
+    * historial
+      * Flecha arriba, Flecha abajo, ^R, ^S, ^G
+        * ^Q si queda bloqueada por ^S, para que no vuelva a pasar, ''stty -ixon''
+      * ''history'', !!, !<n>
+    * movimiento línea de comando:
+      * **^A** : inicio
+      * **^E** : final
+      * **^Derecha** : palabra derecha
+      * ^Izquierda : palabra izquierda
+      * ^K : borra desde cursor hasta final
+      * ^X+Retroceso : borra desde curso a principio
+      * ^T : intercambia caracteres
+      * <esc> T : intercambia 2 palabras anteriores
+      * <esc> U : mayúsculas desde cursor a final de palabra
+      * <esc> L : minúsculas desde cursor a final de palabra
+      * ^X+^E : edita línea comando en editor indicado por $EDITOR o $FCEDIT
+  * configuración consola
+    * variables de entorno
+      * ''export''
+      * PS1
+      * PATH
+      * ''echo $<variable>''
+      * ''unset''
+      * ''env''
+  * Ayuda
+    * ''man''
+      * ''man -k "<palabra clave>"''
+      * ''man <seccion> <comando>''
+      * ''whatis <comando>''
+      * usa ''less'' para mostrar la información
+        * **/** : búsqueda
+        * **<espacio>** : avanza página
+        * **Q** : salir
+      * ''info info''
+      * ''help <comando>''

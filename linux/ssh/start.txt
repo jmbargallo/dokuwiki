@@ -1,0 +1,40 @@
+======sshd ======
+
+{{tag>linux}}
+
+  * [[linux:ssh:install]]
+  * [[linux:ssh:config]]
+  * [[linux:ssh:clientconfig]]
+  * [[linux:ssh:keygen]]
+  * [[linux:ssh:cliente]]
+  * [[linux:ssh:keys]]
+  * [[linux:ssh:chroot]]
+  * [[linux:ssh:rsync]]
+  * [[linux:ssh:varios]]
+  * [[linux:ssh:sshfs]]
+
+=== Port Forwarding, Proxy, Tunneling=== 
+  * [[linux:ssh:reverse]]
+  * [[linux:ssh:remoteconn]]
+  * [[linux:ssh:remoteaccess]]
+  * [[linux:ssh:localportforwarding]]
+    * [[https://www.atareao.es/ubuntu/tuneles-ssh/]]
+  * [[linux:ssh:proxy]]
+  * [[linux:ssh:rdpconn]]
+  * [[linux:ssh:mastercontrol]]
+
+=== more info=== 
+  * [[https://www.flu-project.com/2020/09/suites-de-cifrado-tlsssl-parte-i.html]]
+    * {{ :linux:ssh:suites_de_cifrado_tls_ssl_parte_i_flu_project.pdf |}}
+  * [[https://www.flu-project.com/2020/09/suites-de-cifrado-tlsssl-parte-ii.html]]
+    * {{ :linux:ssh:suites_de_cifrado_tls_ssl_parte_ii_flu_project.pdf |}}
+  * [[https://www.flu-project.com/2020/09/suites-de-tlsssl-parte-iii.html]]
+    * {{ :linux:ssh:suites_de_tls_ssl_parte_iii_flu_project.pdf |}}
+  * [[https://www.flu-project.com/2020/09/suites-de-tlsssl-parte-iv.html]]
+    * {{ :linux:ssh:suites_de_tls_ssl_parte_iv_flu_project.pdf |}}
+  * [[https://www.flu-project.com/2020/10/tls13-que-hay-de-nuevo-parte-i.html]]
+    * {{ :linux:ssh:suites_de_cifrado_tls_ssl_parte_i_flu_project.pdf |}}
+  * [[https://www.flu-project.com/2020/11/tls13-que-hay-de-nuevo-parte-ii.html]]
+    * {{ :linux:ssh:tls1.3_que_hay_de_nuevo_parte_ii_flu_project.pdf |}}
+=== mirar=== 
+  * [[http://matt.might.net/articles/ssh-hacks/]]

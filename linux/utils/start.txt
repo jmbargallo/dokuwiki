@@ -1,0 +1,46 @@
+= linux utils
+== cli
+  * [[software:utils:f3]]
+  * [[software:utils:enchive]]
+  * [[software:utils:rhash]]
+  * [[software:utils:transfer]]
+  * [[software:utils:jmespath]]
+  * [[sotfware:utils:youtube-dl]]
+  * [[software:utils:trans]]
+  * scrot, captura pantalla desde cli [[https://ubunlog.com/scrot-capturas-de-pantalla-desde-la-consola/]]
+  * xli, visor imágenes ligero cli [[http://manpages.ubuntu.com/manpages/bionic/man1/xli.1.html]]
+
+  * [[software:youtransfer:start]]
+  * [[software:utils:twitch-sl]]
+== remote desktop
+  * [[http://www.freerdp.com/]]
+  * [[https://gitlab.com/Remmina/Remmina/wikis/home]]
+  * [[linux:utils:chromeremotedesktop]]
+
+== image dupes
+  * [[linux:paquetes:findimagedupes]]
+  * [[linux:paquetes:fdupes]]
+
+== 
+
+  * [[https://aria2.github.io/]] : aria2, downloader CLI versatil (enlaces, .torrent, .magnet, varias fuentes)
+    * webui tutorial: [[https://freedif.org/webui-aria2-web-interface-for-the-download-accelerator-aria2/]]
+  * [[https://github.com/icholy/ttygif|grabación terminal en GIF]]
+    * byzanz
+
+
+== hardware
+  * [[linux:impresion:km353]]
+
+== liberar espacio
+  * limpiar cache APT:
+    * ''du -sh /var/cache/apt/archives''
+    * ''sudo apt-get clean''
+  * eliminar kernels viejos si no son necesarios
+    * ''sudo apt-get autoremove --purge''
+    * con cautela
+  * desinstalar apps y juegos no necesarios
+    * ''sudo apt-get remove <package>''
+    * ''sudo apt-get autoremove''
+
+/via: [[https://www.omgubuntu.co.uk/2016/08/5-ways-free-up-space-on-ubuntu]]

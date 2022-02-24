@@ -1,0 +1,28 @@
+====== curl ======
+
+  * [[https://curl.haxx.se/]] -> {{ :linux:curl:everything-curl.pdf |}}
+  * curl api rest test: [[https://www.baeldung.com/curl-rest]]
+  * protocolos: DICT, FILE, FTP, FTPS, GOPHER, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMTP, SMTPS, TELNET y TFTP
+
+=== parámetros=== 
+  * ''-o <nombre>'': guarda el archivo con el nombre especificado
+  * ''-O'': guarda el archivo con el nombre original
+  * ''%%--%%user [-u] <USER:PASS>'': especifica credenciales del servicio
+  * ''- #'': barra de progreso
+  * ''%%--%%limit-rate <unidad>'': limita los bytes de descarga/subida
+  * ''-C'': reanudar una descarga
+  * ''-I'': solo cabeceras
+  * ''%%--%%insecure [-k]'': desactivar verificación certificado
+  * ''-x'': uso de proxy
+  * ''-v'': verboso
+
+=== ejemplos=== 
+  * upload FTP: ''curl -T NOMBRE_ARCHIVO DIRECCION_SERVIDOR -user USUARIO:CONTRASEÑA''
+  * enviar mail: ''curl -n %%--%%ssl-reqd %%--%%mail-from %%"%%EMAIL_ORIGEN%%"%% %%--%%mail-rcpt %%"%%EMAIL_DESTINO%%"%% %%--%%url smtps:%%//%%smtp.gmail.com:465 -u %%"%%EMAIL_ORIGEN:CONTRASEÑA%%"%% -T mail.txt''
+<code txt mail.txt>From: "Nombre" <EMAIL_ORIGEN>
+To: "Otro Nombre" <EMAIL_DESTINO>
+Subject: Asunto
+
+Hola, 
+Cuerpo del mensaje.
+Bye!</code>

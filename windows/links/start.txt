@@ -1,0 +1,22 @@
+links, otra manera de abrir programas
+W10
+
+    https://answers.microsoft.com/es-es/windows/forum/windows_10-security-winpc/no-puedo-abrir-ciertas-aplicaciones-mi-cuenta/f8f266eb-94f9-45f8-a2e8-2e92cf579773
+    tecla_windows + R, msconfig → opciones de arranque
+    tecla_windows + R, secpol.msc → consola de seguridad
+    tecla_windows + X → acceso directo a varias utilidades de configuración
+    tecla_windows + R, cmd, «net user administrador /active:no» → deshabilita usuario administrador
+    tecla_windows + R, shell:startup
+    tecla_windows + R, shell:common startup
+
+otros
+
+    utilidad avanzada de gestión/configuración de usuarios (XP,VISTA): control userpasswords2
+    utilidad avanzada de gestión/configuración de usuarios (7): netplwiz
+    Información de redes wifi a tu alcance (Vista,2008,7): > netsh → wlan → show networks mode=Bssid
+    utilidad de discos: diskmgmt.msc
+    propiedades del sistema (botón derecho en Equipo, propiedades): sysdm.cpl
+    información del sistema: winmsd.exe
+    administrador de tareas: taskmgr
+    ejecutar como administrador en el cuadro de ejecutar (Windows+R): CTRL+SHIFT+INTRO
+

@@ -1,0 +1,171 @@
+= LPIC2 2021 Sesión 6 (2021-02-18)
+== Documentación relacionada:
+  * Manual Certificacion LPIC-2.pdf, pag 76
+  * Material Practicas LPIC-2/LPIC-201/4-Filesystem and Devices/Gestion de LVM/
+  * Presentaciones/2020/201/
+  * gdrive:%%//%%discos linux.txt <- mirar montaje con systemctl
+  * Material Practicas LPIC-2/LPIC-201/4-Filesystem and Devices/Gestion de Swap.txt
+
+== Clase
+=== LVM
+{{ :info:cursos:pue:lpic2-2021:pasted:20210218-121052.png }}
+  * **/etc/lvm**
+  * volúmenes físicos = PV ≡ comandos ''pv*''
+    * crear partición **8e**, evita problemas futuribles (o falta de prestaciones)
+  * grupos de volúmenes = VG ≡ comandos ''vg*''
+  * volúmenes lógicos = LV ≡ comandos ''lv*''
+    * si no se especifica, el sistema de escritura es lineal
+    * pero se puede hacer striped -repartición entre los discos-, mirror - según Alberto, mejor montar un raid y montarlo como PV.
+    * para mirar que sistema están usando nuestros LV: ''lvs -o+lv_layout,stripes''
+  * En una arquitectura LVM basada en varios volúmenes físicos el fallo en cualquiera de ellos provocará que todos los volúmenes lógicos que dependen de él queden fuera de servicio. Por tanto, es conveniente crear solo volúmenes físicos para volúmenes con tolerancia a fallos como los que están en RAID, ya sea software o hardware.
+  * **PE**: extensions físicas de un VG
+    * LVM gestiona una especie de índice y orden de PE para determinar a que LV pertenece un PE
+    * nos sirve para determinar espacio libre y usado y para los movimientos de información
+  * podemos combinar las columnas **prefijo** y **sufijo** para obtener los comandos para administrar el LVM:
+
+^ prefijo ^ sufijo ^ accion ^
+| pv      | create  | creación de un elemento LVM |
+| vg      | extend  | Extiende un VG o LV |
+| lv      | reduce  | Reducción de un VG o LV |
+|         | display | Visualización de los elementos LVM |
+|         | scan    | Consultamos los elementos LVM |
+
+
+==== PV
+  * ''pvcreate <dispositivo>'': añade un disco físico
+  * ''pvdisplay -v'', ''pvs -v''
+  * ''pvscan''
+  * ''pvmove -i 2 -v <PV1> <PV2>'': mueve los PE de un PV a otro (con la idea de sacar el PV)
+    * si no indicamos <PV2> (destino), el sistema lo hace automaticamente
+    * **-i <n>**: indica el estado del preceso cada <n> segundos
+    * **-v**: verbose
+    * NO ES COMPATIBLE CON SNAPSHOTS
+
+==== VG
+  * ''vgcreate <VG> <PV>'': crea un VOLUME GROUP
+  * ''vgdisplay -v'', ''vgs''
+  * ''vgscan''
+  * ''vbrename''
+  * ''vgchange'': cambia propiedades del VG
+    * **-a {y/n}**: habilita o no los LVS
+    * **-u**: regenerar UUID
+    * **-x {y/n}**: deshabilita extensión a más discos en el VG
+  * ''vgextend <VG> <PV>'': añadir un PV a un VG
+  * ''vgreduce <VG> <PV>'': quitar un PV a un VG
+    * **--removemissing**
+  * ''vgconvert'': convierte a LVM1 o LVM2 !!!
+
+==== LV
+  * se puede definir la lógica de escritura del LV:
+    * Linear: ocupa un PV y después los siguientes, uno detrás de otro
+    * Striped: se reparte entre varios PV, puede mejorar el rendimiento
+    * Mirrored: mantiene copias idénticas en diferentes PV
+      * mejor montar RAID por debajo y ofrecerlo como PV al LVM
+  * ''lvcreate <opciones> <VG>''
+    * **-L**: tamaño. Anteponiendo + se añade al existente. Usar unidades, por defecto MG
+    * **-l**: en bloques
+    * **-n**: mombre
+    * **-i n**: stripes
+    * **-m**: mirror
+  * ''lvextend -L <tamaño> <LV>'': añadir espacio al LV (si está disponible en el VG)
+    * después hay que ejecutar el ''resize2fs'' correspondiente (incluso el **e2fsck**) al sistema de archivos que tengamos.
+  * ''lvreduce -L <tamaño> <LV>'': ¿procedimiento correcto?
+  * ''lvscan''
+  * ''lvdisplay'', ''lvs''
+  * ''lvrename''
+  * ''lvchange'': cambiar propiedades, atributos
+    * **-a n**: inactivo
+    * **-p {r,w}**: solo lectura o escritura
+  * ''lvresize''
+
+===== LV snapshot
+      * especificar el tamaño
+      * OJO, se han de revertir, si no se comerá el espacio
+      * estratégia copias seguridad en unidades con mucho movimiento. Hacemos copia del snapshot
+      * crea un punto de montaje diferente. Solo guarda las diferencias
+      * ''lvcreate -L <tamaño> -s -n <nombre_snapshot> <LV>''
+      * ''lvdisplay /dev/<VG>/<nombre_snapshot>''
+      * ''lvconvert --merge nombrevg/snapshot''
+
+==== Laboratorio: Material Practicas LPIC-2/LPIC-201/4-Filesystem and Devices/2-Gestion de LVM/2-Laboratorios LVM.pdf
+  * crear primer LVM con un disco:
+    * particionar el disco a **8e**
+    * añadir a PV con ''pvcreate /dev/sdb1''
+    * añadir a VG con ''vgcreate volgrp /dev/sdb1''
+    * añadir a LV con ''lvcreate -n documentos -L +9G volgrp''
+      * nos crea **/dev/volgrp/documentos**
+      * **-L**: espacio
+      * **-n**: nombre del LV
+      * **vlgrp**: VG del que coge el espacio
+    * formateamos la partición LVM: ''mkfs.ext3 /dev/volgrp/documentos''
+    * ya se puede montar: ''mount /dev/volgrp/documentos /datos''
+    * si hacemos ''df -h'' nos aparece como: **/dev/mapper/volgrp-documentos**
+  * añadir un segundo disco:<code bash>
+# añadimos el disco al PV
+pvcreate /dev/sdc1
+
+vgextend volgrp /dev/sdc1
+lvextend -l +5GB /dev/volgrp/documentos 
+umount /datos
+
+# comprobamos el estado del disco
+e2fsck -f /dev/volgrp/documentos
+
+# para extender el LV (pq está en ext3, gxfs_growfs si lo hubiese estado en xfs)
+resize2fs /dev/volgrp/documentos
+
+mount /documentos
+</code>
+  * extender partición **%%/%%** en caliente:<code bash>
+# nos muestra las particiones LVM y así puedo ver cual es la partición raiz
+lvscan
+vgdisplay -v centos
+pvcreate /dev/sde1
+vgextend centos /dev/sde1
+lvextend -L +4GB /dev/centos/root
+
+xfs_growfs /dev/centos/root</code>
+  * sustitución de discos -> 3-Laboratorio reducir LVM quitando un physical volumen.pdf:<code bash>
+pvcreate /dev/sdd1vgextend volgrp /dev/sdd1
+
+# muestra el estado de ocupación de cada PV (Total PE / Free PE)
+vgdisplay -v volgrp 
+
+pvmove -i2 -v /dev/sdb1 /dev/sdd1
+
+# volvemos a verificar con que los Total/Free PE del disco que queremos retirar están igual (sin uso)
+vgdisplay -v volgrp 
+
+# sacamos el PV del VG
+vgreduce -v volgrp /dev/sdb1
+
+# nos dirá que el VG volgrp tiene 2 discos (/dev/sdc1 y /dev/sdd1) y que hay un disco sin usar, /dev/sdb1
+pvscan
+</code>
+  * deshacer:<code bash>
+umount /documentos
+lvremove documentos volgrp # o lvremove /dev/volgrup/documentos
+vgremove volgrp
+pvremove /dev/sdb1
+pvremove /dev/sdc1
+pvremove /dev/sde1
+</code>
+  * snapshot FAIL:<code bash>
+pvcreate /dev/sdc1
+vgcreate volgrp /dev/sdc1
+lvcreate -L +5G -n lv1 volgrp
+mount /dev/volgrp/lv1 /mnt
+cp /etc/*.conf /mnt
+lvcreate --size 1G -s -n lv1snapshot volgrp/lv1
+lvdisplay volgrp/lv1
+cp /etc/*.deny /mnt
+mkdir /mnt2
+mount /dev/volgrp/lv1snapshot /mnt2 # fail
+reboot
+lvconvert --merge volgrp/lv1snapshot #   Snapshot lv1snapshot is already merging. Unable to merge LV "lv1snapshot" into its origin.
+lvremove volgrp/lv1snapshot # Can't remove merging snapshot logical volume "lv1snapshot"
+<OMG>
+lvremove volgrp/lv1 #   Logical volume "lv1snapshot" successfully removed. Do you really want to remove active logical volume lv1? [y/n]: y
+vgremove volgrp
+pvremove /dev/sdc1
+</code>

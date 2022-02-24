@@ -1,0 +1,106 @@
+====== LAMP Ubuntu 18-04 ======
+
+
+
+====== Paso 1 — Instalar Apache y actualizar el cortafuegos ======
+
+Instalar Apache usando el administrador de paquetes de Ubuntu, apt:
+
+<code:bash>
+    sudo apt update
+    sudo apt install apache2
+</code> 
+ 
+Comprobar firewall
+
+<code:bash>
+    sudo ufw app list
+</code> 
+ 
+<code:bash>
+Output
+Available applications:
+  Apache
+  Apache Full
+  Apache Secure
+  OpenSSH
+</code> 
+
+Tráfico se encuentra habilitado para los puertos 80 y 443:
+
+<code:bash>
+    sudo ufw app info "Apache Full"
+</code> 
+ 
+<code:bash>
+Output
+Profile: Apache Full
+Title: Web Server (HTTP,HTTPS)
+Description: Apache v2 is the next generation of the omnipresent Apache web
+server.
+
+Ports:
+  80,443/tcp
+</code> 
+
+Para permitir el tráfico de entrada HTTP y HTTPS para este perfil:
+
+<code:bash>
+    sudo ufw allow in "Apache Full"
+
+</code> 
+
+Pagina de prueba:
+
+<code:bash>
+http://your_server_ip
+</code>
+
+Deberia verse la pagina predeterminada de Apache
+
+
+====== Paso 2 — Instalar MySQL ======
+
+Usar apt para adquirir e instalar este software:
+
+<code:bash>
+    sudo apt install mysql-server
+</code>
+ 
+
+====== Paso 3 — Instalar PHP ======
+
+Usar apt para adquirir e instalar este software:
+
+<code:bash>
+    sudo apt install php libapache2-mod-php php-mysql
+</code>
+ 
+Prioridad archivos .php.
+
+
+<code:bash>
+    sudo nano /etc/apache2/mods-enabled/dir.conf
+</code>
+ 
+
+Debería verse semejante a esto:
+
+
+<code>
+/etc/apache2/mods-enabled/dir.conf
+
+<IfModule mod_dir.c>
+    DirectoryIndex index.html index.cgi index.pl index.php index.xhtml index.htm
+</IfModule>
+</code>
+ 
+
+Mover archivo de índice de PHP (subrayado arriba) a la primera posición después de la especificación 
+ 
+
+Reiniciar el servidor Apache para que tus cambios sean reconocidos, lo puedes hacer mediante el comando:
+
+<code:bash>
+    sudo systemctl restart apache2
+</code>

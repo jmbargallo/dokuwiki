@@ -1,0 +1,23 @@
+= linux communications
+  * [[linux:tcpip:start]]
+  * [[linux:tcpip:protocolos:start]]
+
+== aplicaciones
+  * [[linux:tcpip:nmap|]]: scan de red
+  * [[linux:tcpip:nikto2]]: scan de webs
+  * [[linux:tcpip:netcat|]]
+  * [[linux:tcpip:dig]]
+  * [[linux:tcpip:ss]]
+
+== sockets
+    * [[http://www.vozidea.com/como-obtener-los-sockets-unix-abiertos-en-linux]]
+    * [[https://en.wikipedia.org/wiki/Unix_domain_socket]]
+    * [[https://unix.stackexchange.com/questions/88083/idiomatic-location-for-file-based-sockets-on-debian-systems]]
+
+== other
+<alert type="warning" dismiss="true" icon="fa fa-warning">
+  * SPF/DKIM:
+    * SPF Wizard: [[http://www.spfwizard.net/es/]]
+    * DKIM Help: [[http://eltallerdelbit.com/configuracion-de-registros-spf-y-dkim/]]
+    * SPF+DMARC+DKIM: [[https://blog.elhacker.net/2020/11/configurar-correo-electronico-seguro-spf-dmarc-dkim.html?m=1]]
+</alert>

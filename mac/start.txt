@@ -1,0 +1,67 @@
+====== macintosh ======
+
+===== shortcuts (essentials) =====
+
+
+  * **^ + K**: borrar desde cursor a final de línea
+  * **⌥ + ←**: borrar desde cursor a principio de palabra (o la palabra anterior si ya está al principio)
+  * **^ + A**: mover al principio de línea
+  * **^ + E**: mover a final de línea
+  * **⌥ + ⇦ ⇨**: mover a palabra siguiente
+
+^ key ^ name      ^
+| ⌘   | commnand  |
+| ⇧   | Shift     |
+| ⌥   | Option    |
+| ⇪   | Caps Lock |
+[[http://www.fileformat.info/search/]]
+
+==== Información ====
+
+  * [[macintosh:boot:start]]
+  * [[http://support.apple.com/kb/HT2674?viewlocale=es_ES&locale=es_ES|secuencia arranque]]
+  * [[https://support.apple.com/en-us/HT201236|hotkeys]]
+
+=== crear medios arranque ===
+
+  * en USB : DiskMaker X
+  * en DVD ([[https://support.apple.com/en-us/HT201372|creación medios CLI]] - [[https://discussions.apple.com/thread/6185134@creación DVD CLI]]):
+    * crear una partición de 8GB
+    * ejecutar el comando: <code bash>sudo /Applications/Install\ macOS\ High\ Sierra.app/Contents/Resources/createinstallmedia --volume /Volumes/MyVolume --applicationpath /Applications/Install\ macOS\ High\ Sierra.app</code>
+      * el directorio "Install" variarás según la versión
+      * el directorio "/Volumes/xxx" se ha de adaptar a la partición que hayas creado
+    * desde el administrador de discos, generar una imagen en CD/DVD maestro
+    * grabar la imagen generada en un DVD DL
+      * recomiendan hacerlo desde la propia utilidad de discos y no desde el Finder, pero en MACOSX 10.11.6 no he visto la forma de hacerlo --> en otro sitio dice de grabarlo a través de Finder, pero importante que la partición creada no exceda la capacidad del DVD DL
+
+
+== CLI ==
+
+  * gestor de paquetes: [[macintosh:brew:start]]
+  * añadir color en línea de comandos
+<code .bashrc>
+export CLICOLOR=1
+
+# redundante después del export
+alias ls='ls -G'
+alias ll='ls -lG'
+</code>
+
+== filesystem ==
+
+  * [[macintosh:filesystem:ntfs]]
+  * [[macintosh:filesystem:dd]]
+
+== trucos ==
+
+  * [[macintosh:trucos:filevault|Cambio contraseña maestra e implicaciones]]
+  * [[macintosh:trucos:hiddenfiles|Mostrar en finder carpeta oculta]]
+
+== configuración ==
+
+  * Mostrar la configuración en la pantalla de login (activada hasta ''Lion''):''$ sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfoHostName''
+  * Mostrar un banner pre-login (editar con TextEdit) y guardar en y como ''HD/Library/Security/PolicyBanner''
+
+== addons ==
+
+  * Mac OS X Lion LaunchPad en 10.6 y 10.5.8 : [[http://sourceforge.net/projects/maclaunchpad/]]

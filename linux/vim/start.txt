@@ -1,0 +1,67 @@
+====== vi(m) ======
+
+=== instalación=== 
+''apt-get install vim vim-rt'' -> instala el ejecutable y el resaltado de sintaxis
+
+<code vim .vimrc>
+:syntax on
+:colorscheme elflord
+:set cursorline                 " set cul
+:set number                     " set nu
+:set showmatch                  " set sm
+":set autoindent                " set au
+:set ignorecase                 " set ic
+:set incsearch                  " set is
+:set hlsearch                   " set hls
+:set ruler                      " set ru
+":set backupcopy
+</code>
+
+
+=== resumen comandos=== 
+[[linux:vim:comandos]]
+
+=== opciones (personalización)=== 
+[[http://vimdoc.sourceforge.net/htmldoc/options.html]]
+
+  * mostrar el estado de todos los comandos: '':set all''
+  * muestra ayuda: '':help vimrc''
+
+=== colores=== 
+  * colorear en función del lenguaje: ''syntax on''
+  * esquema de colores: ''colorscheme elflord''
+  * resaltar la línea del cursor: ''set cursorline (cul)''
+
+=== programación=== 
+  * numerar las líneas (ojo al COPY&PASTE): ''set number (nu)''
+  * muestra la pareja de { [ ( si está en pantalla: ''set showmatch (sm)''
+  * autodindentación:'':set autoindent (ai)''
+
+=== búsquedas=== 
+  * ignora mayúsculas/minúsculas en la búsqueda?:''set ignorecase (ic)''
+  * muestra a medida que tecleamos el texto que coíncide con la búsqueda:''set incserach (is)''
+  * muestas todas las coincidencias de la búsqueda: ''set hlserach (hls)''
+
+=== ventanas=== 
+  * muestra la barra de posición del cursor: ''set ruler (ru)''
+
+=== otros=== 
+  * crear abreviaturas: '':ab <abreviatura> %%'%%<texto_expansión>%%'%%''
+    * sin parámetros, muestra las abreviaturas actuales
+  * macros:
+    * crear macro: ''q, nombre, q''
+    * usar macro: @nombre
+
+=== comandos de resaltado de sintaxis=== 
+  * '':highlight''
+
+=== trucos=== 
+  * borrar todas las líneas vacías de un fichero: <code>$ :g/^$/d</code>
+  * ejemplos varios búsqueda/sustitución: [[http://www.netcom.es/vildeu/permisos.html]]
+
+=== plugins & cia=== 
+  * checkSyntax
+  * DBExt
+  * FindMate
+  * [[http://mundogeek.net/archivos/2007/06/09/esquemas-de-colores-en-vim/|esquemas de colores]]
+

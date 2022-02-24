@@ -1,0 +1,234 @@
+= LPIC2 2021 Sesión 11 (2021-03-09)
+== Documentación relacionada:
+  * Manual Certificacion LPIC-2.pdf, pag XX
+  * Material Practicas LPIC-2/LPIC-202/
+  * Presentaciones/2020/202/
+  * gdrive:%%//%%
+
+== Clase
+=== proxy squid
+  * DOC: Material Practicas LPIC-2/LPIC-202/2-Web Services/Squid/Laboratorio Squid.pdf
+  * restricciones:
+    * horarias
+    * por tipo de contenido (extensiones)
+    * report: **sarg** -> DOC (no certificación): Material Practicas LPIC-2/LPIC-202/2-Web Services/Squid/Install sarg.txt
+      * <code bash>
+wget -N http://www.alcancelibre.org/al/server/AL-Server.repo -O /etc/yum.repos.d/AL-Server.repo
+yum -y install sarg
+</code>
+      * <code ; /etc/sarg/sarg.conf>
+#       sarg -l file
+access_log /var/log/squid/access.log
+
+#       sarg -o dir
+output_dir /var/www/html/squid-reports
+
+#       Date format in reports: e (European=dd/mm/yy), u (American=mm/dd/yy), w(Weekly=yy.ww)
+date_format e
+</code>
+      * <code bash>
+sarg -x # http://192.168.1.5/squid-reports/
+</code>
+
+=== nginx
+  * DOC: Material Practicas LPIC-2/LPIC-202/2-Web Services/Nginx/Instalar y configurar Nginx en CentOS 7.pdf
+  * modo asíncrono (VS apache), más ligero, más rápido
+  * Centos no lo soporta hasta v8:<code bash>yum install epel-release -y # repo adicional
+yum install nginx -y
+</code>
+  * **/etc/nginx/**
+    * **nginx.conf**
+    * **conf.d/**
+
+==== Laboratorio: virtualhost con nginx
+  * ''mkdir -p /var/www/virtual_hosts/www.mysite.com/{html,logs}''
+  * <code ; /etc/nginx/conf.d/www.mysite.com.conf>
+server {
+  listen 80;
+  server_name nginx.192.168.2.5.nip.io;
+  access_log /var/www/virtual_hosts/www.mysite.com/logs/access.log;
+  error_log /var/www/virtual_hosts/www.mysite.com/logs/error.log;
+  location / {
+    root /var/www/virtual_hosts/www.mysite.com/html;
+    index index.html index.htm index.php;
+  }
+}
+</code>
+  * crear index.html (si no, da forbidden)
+  * recordar que el apache esté parado
+  * ''nginx -t'': chequeo archivo configuración
+  * ''nginx -s reload'': recarga la configuración en caliente
+
+==== Laboratorio: SSL
+  * <code bash>
+cd /etc/nginx
+openssl genrsa -out mysite.key 2048
+openssl req -new -key mysite.key -out mysite.csr
+openssl x509 -req -days 365 -in mysite.csr -signkey mysite.key -out mysite.crt
+</code>
+  * <code ; /etc/nginx/conf.d/ssl.mysite.com.conf>
+server {
+  listen 80;
+  listen 443 default ssl;
+  ssl_certificate /etc/nginx/mysite.crt;
+  ssl_certificate_key /etc/nginx/mysite.key;
+  server_name nginx.192.168.2.5.nip.io;
+  access_log /var/www/virtual_hosts/www.mysite.com/logs/access.log;
+  error_log /var/www/virtual_hosts/www.mysite.com/logs/error.log;
+  location / {
+    root /var/www/virtual_hosts/www.mysite.com/html;
+    index index.html index.htm index.php;
+  }
+}
+</code>
+  * ''systemctl restart nginx''
+
+==== Laboratorio: reverse proxy
+  * DOC: Material Practicas LPIC-2/LPIC-202/2-Web Services/Nginx/proxy inverso con Nginx.txt
+  * DOC: Material Practicas LPIC-2/LPIC-202/2-Web Services/Apache/Ficheros de configuracion ejemplos/*.conf
+
+=== File Sharing: samba
+  * DOC: Material Practicas LPIC-2/LPIC-202/3-File Sharing/1-Samba
+    * Presentación Seminario Integracion Windows Linux.pdf
+    * 1-Configuración básica de Samba.pdf
+  * (pag 223)
+  * samba: paquete open source para sistemas Linux que permite comunicarse con SMB/CIFS
+    * compartición archivos e impresoras en Windows
+  * samba4 soporta inicio de sesión de Active Directory
+  * se podría integrar como otro controlador de dominio
+  * ''rpm -aq samba*''
+  * ''yum -y install samba samba-client samba-common''
+  * **/etc/samba/smb.conf**
+  * servicios:
+    * **smb**: recursos
+      * **/var/log/samba/log.smbd**
+    * **nmb**: wins
+      * **/var/log/samba/log.nmbd**
+
+==== Laboratorio: compartir recurso samba
+    * <code bash>
+mkdir /nominas
+chmod 1777 /nominas # sticky bit activo
+adduser -s /sbin/nologin martes9
+passwd martes9
+smbpasswd -a martes9 # formato ntlm contraseñas windows
+</code>
+    * <code ; /etc/samba/smb.conf>
+[nominas]
+  comment = ccc
+  path = /nominas
+  public = yes
+  writable = yes
+  printable = no
+  valid users = martes9 @nominas # @ es grupo
+  write list = martes9
+  read list = @nominas
+  #host allow = ALL EXCEPT 192.168.2.152
+</code>
+    * <code bash>
+testparm # comprobación que la configuración está bien
+systemctl restart smb
+systemctl restart mnb
+pdbedit -L # listar usuarios
+</code>
+
+==== smb.conf
+  * sección global
+    * netbios name
+    * opciones seguridad:
+      * standalone (linea 105):
+        * security = user # creación local en el linux de los usuarios
+        * passbd backend = tdbsam # en /etc/samba
+      * domain (linea 120):
+        * security = domain
+        * passbd backend = tdbsam
+        * realm = <DOMINIO>
+        * password server = server.dominio
+        * (integración, hay que meter al linux en el AD como miembro)
+      * ADS:
+        * kerberos
+    * Domain Controler (linea 146): configurar samba como servidor de dominio
+    * guest ok = {yes|no}
+    * public = {yes|no}
+    * browseable = {yes|no}
+    * writable = {yes|no}
+    * valid users = <user>, <@grupo>
+    * write list = <user>, <@grupo>
+    * admin users = <user>, <@grupo>
+    * directory mask = 0755
+    * create mask = 0644
+    * veto files
+    * hide dot files = {yes|no}
+  * sección shares
+  * ''smbclient %%//%%192.168.2.5/nominas -U martes9''
+
+==== Laboratorio: otro recurso con más opciones
+  * <code bash>
+mkdir /usuarios
+chmod 1777 /usuarios
+adduser -s /sbin/nologin mate
+passwd mate
+smbpasswd -a mate
+</code>
+  * <code ; /etc/samba/smb.conf>
+[ususarios]
+	admin users = mate
+	comment = usuarios
+	create mask = 0644
+	directory mask = 0700
+	guest ok = Yes
+	path = /usuarios
+	valid users = martes9 mate
+	write list = mate
+</code>
+    * los ficheros/directorios creados por **mate** (admin) desde Windows apareceran como **root** en Linux
+  * <code bash>
+testparm # comprobación que la configuración está bien
+systemctl restart smb
+systemctl restart mnb
+</code>
+
+==== smbpasswd <opcion> <usuario>
+  * **-a**: añadir
+  * **-e**: activar
+  * **-d**: desactivar
+  * **-x**: borrar
+
+==== smb-client
+Para conectarnos desde Linux a un recurso samba, usamos el **smb-client**. Es una shell (tipo ftp)
+  * ''yum -y install samba-client''
+  * ''smbclient %%//%%<ip>/<recurso> -U <user>''
+
+==== mount
+  * ''yum -y install cifs-utils''
+  * ''mount -t cifs -o username=<user> %%//%%<ip>/<recurso> /punto_de_montaje''
+  * **credentials**:<code>
+username=<user>
+password=<password>
+domain=<domain> # optional
+</code>
+  * <code ; /etc/fstab>
+//<ip>/<recurso> /recurso cifs credentials=/path_to_file/credentials 0 0
+</code>
+
+==== winbind
+  * 1-Configuración básica de Samba.pdf (pag. 27)
+  * permite verificar credenciales de usuario vía PAM
+  * ''yum -y install samba-winbind samba-windbin-clients pam_krb5''
+  * es un servicio
+  * [[https://www.server-world.info/en/note?os=CentOS_7&p=samba&f=3]]
+  * hay que modificar el **/etc/samba/smb.conf**:<code>
+security = domain
+winbind use default domain = yes
+winbind separator = +
+winbind cache time = 300
+idmap uid = 1000020000
+idmap gid = 1000020000
+template shell = /bin/bash
+template homedir = /home/%D/%U
+winbind enum groups = yes
+winbind enum users = yes
+</code>
+  * alternativa NFS y SUA; 1-Configuración básica de Samba.pdf (pag. 40)
+  * ''net ads join -U <admin_user>''
+  * /etc/resolv.conf: ha de resolver contra el AD

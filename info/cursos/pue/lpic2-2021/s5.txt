@@ -1,0 +1,214 @@
+= LPIC2 2021 Sesión 5 (2021-02-16)
+== Documentación relacionada:
+  * Manual Certificacion LPIC-2.pdf, pág 16
+  * Presentaciones/2020/201/
+  * Material Practicas LPIC-2/LPIC-201/3-System Startup/
+  * gdrive:%%//%%discos linux.txt <- mirar montaje con systemctl
+  * Material Practicas LPIC-2/LPIC-201/4-Filesystem and Devices/Laboratorio Desactivar el fsck automático de los sistemas de ficheros.pdf
+  * Material Practicas LPIC-2/LPIC-201/4-Filesystem and Devices/Laboratorio  sistema de archivos XFS.pdf
+  * Material Practicas LPIC-2/LPIC-201/4-Filesystem and Devices/Gestión de espacio de memoria de intercambio.pdf
+  * Material Practicas LPIC-2/LPIC-201/4-Filesystem and Devices/Gestion de Swap.txt
+
+== Clase
+=== Almacenamiento
+  * **/dev/sdX**
+    * X = a, b, c, d... dispositivos SCSI
+    * Además, cada unidad puede tener 4 particiones primarias (1-4) y extendidas (5...)
+  * **/dev/srX**
+  * **/dev/hd{a..d}**: IDE, master, esclavo
+  * **/dev/vdX**: entorno KVM
+  * **/dec/xdX**: entorno XEN
+  * ''cat /proc/partitions''
+  * ''fdisk -l''
+  * ''lsscsi''
+  * ''lsblk''
+  * ''mkfs''
+  * sistemas de archivos
+    * ''df -hT''
+    * ext, ext2, ext3, ext4 (debian, ubuntu)
+    * raiserfs
+    * xfs (redhat >=7)
+    * btrfs: apuntaba maneras y se ha quedado en nada (oracle)
+  * sistemas de archivos virtuales
+    * /proc
+    * /sys
+  * tipos de particiones
+    * 83: tipo Linux standard (necesario para que arranque)
+    * 8e: LVM (permite extender en caliente)
+    * 82: swap
+    * fd: Linux raid auto
+  * añadir discos en caliente (VmWARE, producción): <code bash>cat /proc/scsi/scsi # averiguar controladora discos (host2)
+echo - - - > /sys/class/scsi_host/host2/scan</code>
+    * en redhat/centos: ''yum provides rescan-scsi-bus.sh'' -> ''yum provides sg3_utils''
+  * particionar discos:
+    * ''fdisk -l /dev/sdb''
+      * **n**: new partition
+        * para especificar
+      * **t**: cambiar tipo partición
+      * **p**: muestra información
+      * **d**: delete partition
+      * **w**: guardar cambios, si no no se hace nada
+    * ''partprobe'': sincroniza la table de particiones (discos compartidos que se trabaja conjuntamente -> cluster))
+  * formatear:
+    * ''mkfs -t <file_system> /dev/sdb1''
+      * ''mkfs.<file_system> /dev/sdb1''
+  * montaje:
+    * ''mount'', ''umount''
+    * persistencia **/etc/fstab**
+    * a través de systemD:<code>
+##Creacion de una unit tipo mount a traves de System-D
+##La nombre de la unit tiene que ser el mismo que el del punto de montaje (Where=/logs)
+vi /etc/systemd/system/logs.mount
+
+[Unit]
+Description=Mount System Backups Directory
+[Mount]
+What=/dev/sdb1
+Where=/logs
+Type=xfs
+Options=defaults
+[Install]
+WantedBy=multi-user.target
+---------------------------------
+# systemctl daemon-reload
+# systemctl start logs.mount
+df -h
+# systemctl stop logs.mount
+df -h
+
+# systemctl enable logs.mount
+df -h
+
+--------------------------------------------
+Ejemplo:
+#vi /etc/systemd/system/mnt-backups.mount
+[Unit]
+Description=Mount System Backups Directory
+[Mount]
+What=/dev/disk/by-uuid/fb78c86e-ac11-45ce-9f0e-3fd95963ab97
+Where=/mnt/backups
+Type=ext4
+Options=defaults
+[Install]
+WantedBy=multi-user.target
+-----------------------------------------------------------------
+</code>
+    * comprobar la persistencia (antes que suceda un kernel panic en el reboot de la máquina)
+      * desmontar (si se ha montado a mano)
+      * montarlo con el parámetro del **fstab**: ''mount /punto_de_montaje''
+      * también con ''mount -a'' : remonta los puntos de montaje de fstab si están desmontados
+    * ''fuser -km /punto_de_montaje'': mata los procesos vinculados al punto_de_montaje
+    * ''blkid /dev/xxx'': da el UUID del dispositivo (de la partición realmente) y se puede usar en **fstab**
+      * ''ls -l .../by-uuid''
+    * también se puede montar por etiqueta (no recomendado)
+      * ''e2label'': pone etiqueta
+      * en **fstab** -> LABEL=<etiqueta>
+  * comprobación de disco:
+    * ''fsck -fpVy /dev/sdb1'': sistema de ficheros ext{2-4}
+      * **-f**: forzar comprobación
+      * **-p**: reparación automática
+      * **-y**: forzar respuestas a YES
+    * ''touch /forcefsck'': forzar **fsck** a un filesystem al arrancar (desmontado o readonly)
+  * ''badblocks -vn /dev/sdb1'': intenta comprobar si tiene sectores defectuosos
+    * **-n**: no destructivo
+    * **-w**: escribir
+  * ''tune2fs'': permite visualizar parámetros de un sistema **ext**:<code>Filesystem volume name:   <none>
+Last mounted on:          <not available>
+Filesystem UUID:          49f0b21d-7481-46c2-aebc-2c3a87d5aba7
+Filesystem magic number:  0xEF53
+Filesystem revision #:    1 (dynamic)
+Filesystem features:      has_journal ext_attr resize_inode dir_index filetype needs_recovery extent 64bit flex_bg sparse_super large_file huge_file uninit_bg dir_nlink extra_isize
+Filesystem flags:         signed_directory_hash 
+Default mount options:    user_xattr acl
+Filesystem state:         clean
+Errors behavior:          Continue
+Filesystem OS type:       Linux
+Inode count:              655360
+Block count:              2621184
+Reserved block count:     131059
+Free blocks:              2538047
+Free inodes:              655349
+First block:              0
+Block size:               4096
+Fragment size:            4096
+Group descriptor size:    64
+Reserved GDT blocks:      1024
+Blocks per group:         32768
+Fragments per group:      32768
+Inodes per group:         8192
+Inode blocks per group:   512
+Flex block group size:    16
+Filesystem created:       Tue Feb 16 19:53:27 2021
+Last mount time:          Tue Feb 16 19:54:33 2021
+Last write time:          Tue Feb 16 19:54:33 2021
+Mount count:              1
+Maximum mount count:      -1
+Last checked:             Tue Feb 16 19:53:27 2021
+Check interval:           0 (<none>)
+Lifetime writes:          132 MB
+Reserved blocks uid:      0 (user root)
+Reserved blocks gid:      0 (group root)
+First inode:              11
+Inode size:	          256
+Required extra isize:     28
+Desired extra isize:      28
+Journal inode:            8
+Default directory hash:   half_md4
+Directory Hash Seed:      d34f0e75-6961-4844-a319-5272254b38f0
+Journal backup:           inode blocks
+</code>
+    * ''tune2fs -j'': cambio de FS
+    * Laboratorio: Laboratorio Desactivar el fsck automático de los sistemas de ficheros.pdf
+      * En la familia de sistemas de ficheros ext (ext2, ext3 y ext4) existen dos parámetros que definen si al arrancar se debe pasar un fsck al sistema de ficheros (aunque el fstab esté a 0 0)
+      * ''tune2fs -l /dev/sda5 | grep -E Mount\|Max''
+        * **Maximum mount count**: indica a cuantas veces que se haya montado pasa el **fsck**
+      * **-c**: cambia el Maximum... -1 lo deja inhabilitado
+      * ''tune2fs -C <xxx> /dev/sda'': cambia el número de montajes realizados
+      * **Check interval**: tiempo entre **fsck**
+      * **-i**: cambiamos el intervalo de comprobación (dias, semanas, meses)      * **-T**: cambia la fecha último fsck
+      * **Last check**: fecha del último **fsck**
+      * **-T**: cambiamos la fecha del último **fsck** en formato YYYYMMDDHHMMSS
+    * ''resize2fs''
+  * XFS
+    * registro diario metadatos
+    * defagmentado y resize (hacía arriba) montado y activo ''xfs_growfs''
+    * ''xfs_repair'': idem **fsck**, desmontado e inactivo
+      * **-d**: particiones de solo lectura
+      * poner una partición en solo lectura: ''mount -o remount,ro <punto_de_montaje''
+      * poner partición lectura+escritura: ''mount -o remount,rw <punto_de_montaje''
+      * no trabaja con bloques dañados -> ''badblocks''
+    * ''xfs_fsr'': desfragmentar (con partición montada y activa)
+    * ''xfsdump'' ''xfsrestore''
+    * ''xfs_admin''
+    * Laboratorio: Laboratorio  sistema de archivos XFS.pdf
+    * Laboratorio: backup particion xfs con xfsdump.txt
+      * ''xfsdump -f /copiaseguridad /dev/sdb1'': crea fichero copia seguridad
+      * ''rm -rf /logs'': eliminamos
+      * ''xfsrestore -f /copiaseguridad /logs'': restauramos todo
+      * ''rm /logs/<archivo>'': eliminamos 1 archivo
+      * ''xfsrestore -f /copiaseguridad -i -v silent /logs'': modo interactivo recuperación ficheros "a dedo"
+        * ls
+        * add <archivo>
+        * extract
+      * ''dump'' y ''restore'' para particiones **extX**
+  * SWAP
+    * Gestión de espacio de memoria de intercambio.pdf
+    * Gestion de Swap.txt
+      * ''dd if=/dev/zero of=/swapfile bs=1M count=1024''
+      * ''mkswap /swapfile''
+      * ''chmod 0600 /swapfile''
+      * ''swapon /swapfile''
+      * ''swapoff /swapfile''
+      * ''swapon -s'': me muestra de que está compuesta mi SWAP
+    * **/proc/sys/vm/swappiness**
+      * 0-100, cuanto más bajo, menos uso de SWAP. Por defecto, actualmente, 30
+      * ''echo 10 > /proc/sys/vm/swappiness''
+      * <code bash ; /etc/sysctl/.conf>vm.swappiness=10</code>
+        * ''sysctl -p'': aplicar los cambios en caliente
+
+
+== tips & tricks
+  * openssh
+    * problema cuando tarda mucho en pedir la contraseña -> problema de resolución inversa, DNS
+      * UseDNS no en /etc/ssh/sshd_config
+      * /etc/resolv.conf

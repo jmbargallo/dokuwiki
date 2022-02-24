@@ -1,0 +1,27 @@
+====== rsync ======
+
+=== related=== 
+  * [[linux:rsync:backup]]
+  * [[http://troy.jdmz.net/rsync/index.html|Otra guía]]
+  * al detalle: [[https://www.computerhope.com/unix/rsync.htm]]
+
+=== lista directorios prescincibles=== 
+<code>
+/bin/*
+/dev/*
+/boot/*
+/lib/*
+/lib64/*
+/lost+found/*
+/media/*
+/mnt/*
+/opt/*
+/proc/*
+/run/*
+/sbin/*
+/srv/*
+/sys/*
+/tmp/*
+/usr/*
+</code>
+

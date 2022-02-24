@@ -1,0 +1,14 @@
+====== Bloquear usuario root por SSH ======
+
+Modificar la variable de PermitRootLogin yes a PermitRootLogin no en el archivo de configuración de SSH. Este está ubicado normalmente en /etc/ssh/sshd_config:
+
+<code:bash># nano /etc/ssh/sshd_config</code>
+
+Reiniciar el servicio para aplicar los cambios.
+Para CentOS:
+
+<code:bash># /etc/init.d/sshd restart</code>
+
+Para Debian/Ubuntu:
+
+<code:bash># /etc/init.d/ssh restart</code>

@@ -1,0 +1,133 @@
+= LPIC2 2021 Sesión 8 (2021-02-25)
+== Documentación relacionada:
+  * Manual Certificacion LPIC-2.pdf, pag XX
+  * Material Practicas LPIC-2/LPIC-201/6-System Maintenance/
+  * Presentaciones/2020/201/
+  * gdrive:%%//%%
+  * práctica (fuera de certificación): Material Practicas LPIC-2/LPIC-201/6-System Maintenance/Script para comentar el examen de practica.rar
+
+== Clase
+=== System Maintenance: compresión
+  * ''yum install tar zip unzip gzip bzip xz -y''
+  * tar
+    * **z**: tar.gz
+    * **j**: tar.bz2
+    * **J**: tar.xz
+    * **c**: comprimir
+    * **x**: descomprimir
+    * **v**: verbose
+    * **f**: file (de salida de tar)
+    * **t**: test, visualizar contenido
+    * **C**: indica directorio de destino
+
+=== System Maintenance: 
+  * dump, restore : copias seguridad en sistemas de fichero **ext**
+  * xfsdump, xfsrestore: copias en sistemas de ficheros **xfs**
+  * ''dd if=/dev/zero /of=swap bs=1M count=1024''
+  * ''dd if=/dev/sda /dev/sdb bs=1M'': clonar discos
+
+=== System Maintenance: rsync
+  * configurar como servidor -> [[https://www.jveweb.net/en/archives/2011/01/running-rsync-as-a-daemon.html]]
+  * como comando
+  * **-a**
+  * **-v**
+  * **--delete**: elimina en destino (mirror)
+  * **-e**: tunelizar por SSH
+  * se conecta a maquina, encuentra los ficheros de menos de 2 días y los coge por rsync:<code bash>sh user@maquina "find /home/ -type f -mtime 2 -print0"|rsync -chavzP --stats --files-from=- user@maquina:/ /''</code>
+
+=== System Maintenance: banners, mensajes
+  * **/etc/issue**: notificación antes de conectar
+  * **/etc/motd**: mensaje después del login
+  * **/etc/issue.net**: notificación antes de conectar por telnet
+  * ''shutdown <accion> <tiempo> <mensaje>''
+    * **-r**
+    * **-h**
+    * **-c**: cancelar
+  * ''wall''
+    * ''echo "hola mundo" | wall''
+  * ''systemctl''
+
+=== System Maintenance: compilación desde fuente
+  * DOC: Material Practicas LPIC-2/LPIC-201/6-System Maintenance/4-Compresión y descompresión de archivos.pdf
+  * por defecto:<code bash>./configure [--help]
+make
+make install</code>
+    * pero mirar el README que acompaña a las fuentes.
+    * **.configure** tiene **%%--%%help** para ayudar en las opciones
+  * ''make uninstall'': desinstalación (si está)
+  * DOC: Material Practicas LPIC-2/LPIC-201/6-System Maintenance/lab compilar nginx codigo fuente.txt
+  * desinstalar **gcc** <label type="danger">problema de seguridad</label>
+
+=== LPIC 202
+==== DNS
+  * Manual Certificacion LPIC-2.pdf, pag 246
+  * Material Practicas LPIC-2/LPIC-202/1-Domain Name Server/
+  * Material Practicas LPIC-2/LPIC-202/1-Domain Name Server/1-Resolviendo dominio curso.pdf
+  * Material Practicas LPIC-2/LPIC-202/1-Domain Name Server/2-Laboratorio DNS RedHat7.pdf
+
+=== DNS: configuración básica
+  * Domain Name Server
+    * clientes
+    * servidores (bind, dnsmasq, PowerDNS - ficheros de zonas en BDD)
+    * zonas de autoridad
+  * base de datos distribuida y jerarquica en forma de árbol
+  * la raiz de la jerarqia es la zona llamada "." y lo gestiontan los TDL((top domain level))
+  * peticiones por el puerto 53 UDP
+    * si en transferencias de zona el tamaño es > 512 bytes, se activa el 53 TCP (OJO posibles firewalls)
+  * **unbound**: caché DNS
+    * leer de los esclavos y dan la respuesta a los clientes.
+  * **/etc/named.conf**: configuración básica BIND
+  * **/var/named**: ficheros de zona
+  * en Redhat/centos, instala el paquete **chroot** (bind-chroot.x86_64 32:9.11.4-26.P2.el7_9.3) instalado, y la instalación del bind queda enjaulada:
+    * /var/named/chroot/etc/named.conf
+    * /var/named/chroot/var/named/db.curso
+    * /var/named/chroot/etc/named/db.192.168.2
+  * en **/usr/share/doc/bind-9.11.4/sample/var/named** hay ficheros de zona de ejemplo
+  * **named.conf**
+  * fichero zona:
+    * SOA:
+      * serial: número incremental, por "norma" YYYYMMDDxx. Se cambia cada vez que haces cambios
+      * refresh: si el master no ha contactado, el esclavo pregunta en ese periodo de tiempo
+      * retry: si el esclavo no contacta, va reprobando cada este periodo
+      * expire: si después de este tiempo no contacta, deshabilita la zona
+      * minimum: tiempo de cache
+    * NS: masters y esclavos para resolver la zona (recordar acabar en **.**)
+    * MX: correo
+    * A: registros directos IP
+    * CNAME: alias a otros alias o registros A
+  * fichero zona inversa
+    * SOA
+    * NS
+    * <última cifra ip> IN PTR <fqdn>.
+
+
+==== DNS: Laboratorio
+  * DOC: Material Practicas LPIC-2/LPIC-202/1-Domain Name Server/2-Laboratorio DNS RedHat7.pdf
+  * ''rpm -qa bind*'': para ver paquetes instalados
+  * ''yum install bind* -y''
+  * copiamos los ficheros (pasados por el profe) en<code bash>cp db* /var/named/chroot/var/named/
+cp named.ca /var/named/chroot/var/named/
+cp named.conf /var/named/chroot/etc/
+cd /var/named/chroot/var/named/
+chown named.named *</code>
+  * abrimos otra consola para ver los cambios en el log: ''tail -f /var/log/messages''
+  * editamos: <code ; /etc/resolv.conf>
+nameserver 192.168.2.5
+domain curso.esp
+search curso.esp</code>
+  * habilitamos el enjaulado:<code bash>
+/usr/libexec/setup-named-chroot.sh /var/named/chroot on
+systemctl stop named
+systemctl disable named
+systemctl start named-chroot
+systemctl enable named-chroot
+</code>
+  * comprobamos que está en funcionamiento:<code bash>netstat -tan | grep -i listen
+nslookup orion</code>
+
+
+
+  * ''systemctl start named-chroot''
+    * ''systemctl start named'' (en caso de no tenerlo enjaulado)
+  * ''systemctl stop named-chroot''
+  * ''systemctl enable named-chroot''

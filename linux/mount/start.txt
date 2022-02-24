@@ -1,0 +1,82 @@
+====== mount, smb ======
+
+==== mount ====
+
+paquetería básica:<code bash>sudo apt-get install cifs-utils</code>
+para compartidos windows:
+<code bash>mount -t cifs //server/share -o username=username,password=password,sec=ntlm /punto/montaje</code>
+<code bash>mount -t cifs //server/share -o credentials=/path/to/crendeciales.txt,sec=ntlm /punto/montaje</code>
+<code bash>mount -t cifs //server/share -o username=//username//,password=//password// /punto/montaje</code>
+
+para discos Lacie en red
+<code bash>mount -t nfs <ip>:/nas/NasDisk-0002/public /punto/montaje -O userame=usuario</code>
+para carpetas webdav
+<code bash>mount -t davfs http://<url>/webdav /punto/montaje</code>
+para disco RAM
+<code bash>mount -t tmpfs tmpfs /punto/montaje -O size=1024m</code>
+2 carpetas con el mismo contenido:
+<code bash>mount --bind /una/carpeta /otro/directorio</code>
+[[https://unix.stackexchange.com/questions/198590/what-is-a-bind-mount]]
+=== /etc/fstab
+es el fichero donde se especifican los FS que se montan automáticamente (o no) al arrancar
+^destino         ^ punto/montaje ^ tipoFS ^ opciones                                                                 ^ 0 ^ 0 ^
+| /server/share  | /mnt/carpeta  | smbfs  | username=//username//,password=//password//                              | 0 | 0 |
+| /server/share  | /mnt/carpeta  | smbfs  | credentials=/home/user/.smbpasswd                                        | 0 | 0 |
+| /server/share  | /mnt/carpeta  | smbfs  | credentials=/home/user/.smbpasswd,uid=myuserid,gid=mygroupid             | 0 | 0 |
+| /server/share  | /mnt/carpeta  | smbfs  | noauto,credentials=/home/mate/.smbpasslacie,dir_mode=0777,file_mode=0777 | 0 | 0 |
+
+info sobre credeciales y problemas de montaje de solo lectura:
+  * [[http://www.justlinux.com/nhf/Filesystems/Mounting_smbfs_Shares_Permanently.html|smbfs]]
+  * [[http://www.guia-ubuntu.org/index.php?title=Montar_comparticiones_remotas_usando_smbfs_y_cifs]]
+
+=== /etc/filesystems
+Contiene la información de los sistemas de ficheros del sistema
+Si no existe ''/etc/filesystems'', se busca ''/proc/filesystems''
+Si ''/etc/filesystems'' contiene un * al final del fichero, se continua leyendo ''/proc/filesystems''
+también hay más información de sistemas de ficheros (virtuales en este caso) en ''/etc/vfs''
+
+=== smb=== 
+=== server=== 
+  * ''/etc/samba/smb.conf''
+  * ''sudo service samba restart''
+
+=== client=== 
+  * ''smbclient {--list, -l, -L}''
+
+para darle más seguridad y omitir las credenciales en la linea de comando:
+<code bash>
+mount -t cifs //server/share -credentials=/home/user/.smbpasswd /punto/montaje
+</code>
+o
+<code bash>smbmount //server/share /punto/montaje -o credentials=/home/user/.smbpasswd </code>
+
+el formato del fichero .smbpasswd (al que deberemos proteger de miradas ajenas con un CHMOD 600)(ojo con contraseñas con '*'):
+<code>
+username=joe
+password=bloggs
+</code>
+para conseguir que no solo root puede escribir en los puntos de montaje:
+<code bash>
+sudo chmod +s /usr/bin/smbmnt
+</code>
+
+
+=== macfuse=== 
+''$ sshfs user@ip:/home/user folder''
+Options:
+  * allow_other
+  * allow_recursion
+  * allow_root
+  * jail_symlinks
+
+FS:
+  * sshfs
+  * ntfs-3g
+
+<code bash /etc/fstab>
+user:pass@host:/dir/remote /dir/local sshfs volname=name,<options> 0 0
+</code>
+
+=== otros datos de interés=== 
+[[http://fs-driver.org]] -> driver/programa para poder leer particiones EXT2 desde Windows
+{{tag>linux}}

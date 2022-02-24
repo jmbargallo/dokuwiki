@@ -1,0 +1,73 @@
+= 103.5 Crear, monitorizar y destruir procesos
+== el primer proceso
+  * ''uname''
+    * -n ó --nodename
+    * -s ó --kernel-name
+    * -v ó --kernel-version
+    * -r ó --kernel-release
+    * -m ó --machine
+    * -p ó --processor (unknown como norma)
+    * -i ó --hardware-plataform
+    * -o ó --operating-system
+    * -a ó --all
+
+== listas de procesos
+__carga media__ : Valor de 0 a 1 (para 1 CPU o núcleo) indicando el nivel de carga. Este valor sube 1 entero por cada procesador/nucleo en el sistema. ''TOP'' y ''UPTIME'' ofrecen información sobre la carga del sistema.
+  * ''free'' : muestra la memoria del sistema y su utilización.
+  * ''ps''
+    * tres tipos de opciones:
+      * Unix98: único caracer, agrupables, precedidos por -
+      * BSD: único caracter, agrupables, sin -
+      * GNU Largas: precedidas por --, no se pueden agrupar
+    * **-A, -e** : muestra todos los procesos
+    * **-x** : todos los procesos del usuario, incrementa la cantidad de infomación
+    * -u <user>, U <usuario>, --User
+    * -f, -l, j, l, u, v
+    * **-H, -f, --forest** : arbol de dependencias
+    * **-w, w** : formato ancho
+  * ''top''
+    * parámetros:
+      * **-d** <retardo_segundos>
+      * **-p** <PID>, para monitorizar procesos específicos
+      * **-n** <iteracciones> : muestra las iteracciones especificadas y luego se cierra
+      * **-b** modo batch, no se actualiza la pantalla, sirve para volcados en fichero
+    * comandos con top activo
+      * **h ó ?** : help
+      * **k** : kill procesos
+      * **q** : quit
+      * **r** : renice proceso
+      * **s** : speed de refresco
+      * **P** : ordena por CPU
+      * **M** : ordena por memoria
+  * ''jobs'' : muestra información de los procesos asociados a la sesión actual
+    * proporciona IDs a las tareas de la sesión (no PID de proceso)
+    * muestra si hay trabajos en activo antes de cerrar una sesión
+  * ''pgrep''
+    * ps + grep, búsquedas sencillas
+    * solo devuelve IDP
+
+== procesos en primer y segundo plano
+  * ''Ctrl+Z'' : pausa el programa en curso y lo deja en segundo plano (pausado)
+  * ''fg'' : devuelve el programa en segundo plando a primer plano
+    * si existen varias tareas en segundo plando, se puede especificar a que tarea volver con fg <número ID>, obtenido de ''jobs''
+  * ''bg'' : en lugar de devolver la tarea en activo a primer plano como ''fg'', la deja activa en segundo plano.
+    * alternativamente, para suplir un ''Ctrl+Z'' y ''bg'' se puede usar ''&'' al final del comando
+
+== destrucción de procesos
+  * señales : método comunicación entre procesos.
+  * ''kill -l'' para mostrarlas todas, las más comunes/usuales:
+    * 1 - SIGHUP : se envía esta señal al cerrar una sesión
+    * 9 - SIGKILL
+    * 15 - SIGTERM
+  * ''kill'' : enviar señal a proceso
+    * se puede indicar el número de la señal o el nombre, sin el prefijo SIG
+    * la señal por defecto es SITERM (15)
+    * <code bash>kill -s <señal> <proceso></code>
+    * <code bash>kill -<señal> <proceso></code>
+    * <code bash>kill -s <Nombre_Señal - sin SIG - > <proceso></code>
+  * ''nohup'' : ignora la señal SIGHUP al cerrar una sesión, manteniendo el proceso vivo después de cerrarla.
+    * <code bash>nohup programa <opciones></code>
+  * ''killall'' : destruye procesos por nombre en lugar del PID
+    * **-s ó --signal ó -** : para especificar la señal
+    * **-i** : pide confirmación para cada proceso afectado por el comando antes de enviarle la señal
+  * ''pkill'' : versión con más opciones a la hora de enviar señales a procesos, basados en nombres de usuario, ID de usuarios o grupos, expresiones regulares, etc...

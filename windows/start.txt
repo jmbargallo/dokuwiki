@@ -1,0 +1,43 @@
+====== WINDOWS ======
+
+==== utils====
+=== usuario===
+  * [[windows:utils:freefilesync]]
+  * [[http://www.puransoftware.com/]]
+  * [[https://www.iobit.com/es]]
+  * [[https://ninite.com/]]
+  * captura pantalla:
+    * [[https://app.prntscr.com/en/]]
+    * [[http://getgreenshot.org/]]
+  * [[https://www.nodesoft.com/foldermonitor|foldermonitor]]: monitoriza cambios en un directorio y/o subdirectorios
+  * DeskDrive, montar unidades USB en escritorio
+  * [[https://www.hackplayers.com/2020/05/crackear-usuario-windows-sin-privilegios.html]]
+  * limpieza archivos disco: ''c:\windows\SYSTEM32\cleanmgr.exe /dDrive''
+
+=== forenses===
+  * [[https://docs.microsoft.com/es-es/sysinternals/downloads/autoruns]]
+  * [[https://docs.microsoft.com/en-us/sysinternals/downloads/process-explorer|Process Explorer]]
+  * [[https://cmder.net|cmder]], CMD mejorado, portable
+
+
+
+=== desktop===
+  * [[windows:w10:start]]
+  * [[windows:trucos:start]]
+  * [[windows:links:start]]
+  * [[windows:cmd:start]]
+  * [[windows:regedit:start]]
+  * [[windows:users:start]]
+  * [[windows:boot:start]]
+  * [[https://norfipc.com/inf/servicios-innecesarios-w7.html|servicios en Windows 7]]
+
+=== server===
+  * [[windows:servers:start]]
+  * [[windows:serial:start]]
+
+=== programación===
+  * [[windows:prog:powershell]]
+  * [[windows:prog:vbasic]]
+
+=== virus===
+  * [[windows:virus:test.au3]]
